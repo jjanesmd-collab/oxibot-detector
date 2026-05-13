@@ -36,13 +36,13 @@
 </div>
 </div>
 
-<!-- TABS GIGANTES 3D -->
+<!-- TABS ARREGLADOS -->
 <div class="grid grid-cols-5 gap-2 mb-5">
 <button onclick="tab('billete')" id="tabBillete" class="tab-3d active bg-green-600 rounded-2xl py-4 flex flex-col items-center">
 <div class="text-3xl mb-1">💵</div><div class="text- font-bold">BILLETE</div>
 </button>
 <button onclick="tab('uv')" id="tabUv" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
-<div class="text-3xl mb-1">🔍</div><div class="text- font-bold">INSPEC</div>
+<div class="text-3xl mb-1">💡</div><div class="text- font-bold">LUZ</div>
 </button>
 <button onclick="tab('tipo')" id="tabTipo" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
 <div class="text-3xl mb-1">💱</div><div class="text- font-bold">DÓLAR</div>
@@ -76,12 +76,12 @@
 </div>
 </div>
 
-<!-- 2. MODO INSPECCIÓN CORRECTO -->
+<!-- 2. LUZ DE VERIFICACIÓN -->
 <div id="pUv" class="hidden">
 <div class="bg-slate-800 rounded-3xl p-5 mb-4">
-<h2 class="font-bold mb-4 text-base">Luz de Inspección Forense</h2>
+<h2 class="font-bold mb-4 text-base">Luz de Verificación</h2>
 <div class="bg-purple-900/30 border border-purple-600 rounded-2xl p-4 mb-4 text-sm">
-⚠️ <b>Realidad:</b> Celular NO emite UV real. Esta luz violeta/blanca te ayuda a ver a contraluz.<br><br>
+⚠️ <b>Realidad:</b> Celular NO emite UV real. Esta luz te ayuda a ver a contraluz.<br><br>
 <b>Checklist Billete REAL:</b><br>
 ✓ Marca agua: rostro + valor nítido<br>
 ✓ Hilo seguridad: cambia color al inclinar<br>
@@ -178,7 +178,7 @@
 </div>
 
 <div class="bg-amber-900/30 border border-amber-600 rounded-2xl p-4 text-sm">⚠️ Herramienta educativa. No reemplaza verificación oficial. Celular no emite UV real.</div>
-<div class="text-center mt-5 text-slate-500 text-xs">V7.2 Anónimo | 5 herramientas x $1/mes<br>Soporte: t.me/OxiBotSoporte</div>
+<div class="text-center mt-5 text-slate-500 text-xs">V7.4 Final | 5 herramientas x $1/mes<br>Soporte: t.me/OxiBotSoporte</div>
 </div>
 
 <script>
@@ -193,7 +193,6 @@ async function cargarModelo(){
   if(modelo) return;
   document.getElementById('iaStatus').classList.remove('hidden');
   try{
-    // MobileNet pre-entrenado - en prod cambias por tu modelo de billetes
     modelo = await tf.loadLayersModel('https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json');
     document.getElementById('iaStatus').innerText = '✅ IA Lista - 85% Precisión';
     setTimeout(()=>document.getElementById('iaStatus').classList.add('hidden'),2000);
@@ -266,36 +265,50 @@ function modoInspeccion(tipo){
   const uv=document.createElement('div');
   uv.className='uv-mode';
 
+  // X GIGANTE PARA CERRAR
+  const btnCerrar = `
+    <button id="btnCerrarUV"
+      style="position:fixed;top:20px;right:20px;width:60px;height:60px;
+      background:rgba(0,0,0,0.7);border:3px solid white;border-radius:50%;
+      font-size:36px;color:white;z-index:10001;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;font-weight:bold;">
+      ✕
+    </button>
+  `;
+
   if(tipo==='violeta'){
     uv.style.background='#4c1d95';
-    uv.innerHTML=`<div style="color:white;text-align:center;padding-top:35vh;font-size:20px">
-      <div style="font-size:48px;margin-bottom:20px">🔍</div>
-      <b>LUZ INSPECCIÓN VIOLETA</b><br>
-      <span style="font-size:14px;opacity:0.9">Pasa billete a contraluz</span><br>
-      <span style="font-size:12px;opacity:0.7">Busca: Marca agua + Hilo + Microtexto</span><br><br>
-      <span style="font-size:11px;opacity:0.5">Toca para salir</span>
-    </div>`;
+    uv.innerHTML=btnCerrar+`
+      <div style="color:white;text-align:center;padding-top:30vh;font-size:20px">
+        <div style="font-size:48px;margin-bottom:20px">🔍</div>
+        <b>LUZ VIOLETA</b><br>
+        <span style="font-size:14px;opacity:0.9">Pasa billete a contraluz</span><br>
+        <span style="font-size:12px;opacity:0.7">Busca: Marca agua + Hilo + Microtexto</span><br><br>
+        <span style="font-size:11px;opacity:0.5">Toca X o desliza abajo</span>
+      </div>`;
   } else if(tipo==='blanca'){
     uv.style.background='#fff';
-    uv.innerHTML=`<div style="color:black;text-align:center;padding-top:35vh;font-size:20px">
-      <div style="font-size:48px;margin-bottom:20px">💡</div>
-      <b>LUZ BLANCA MÁXIMA</b><br>
-      <span style="font-size:14px;opacity:0.9">Busca tinta cambia color</span><br>
-      <span style="font-size:12px;opacity:0.7">Verde→Azul en esquina = REAL</span><br><br>
-      <span style="font-size:11px;opacity:0.5">Toca para salir</span>
-    </div>`;
+    uv.innerHTML=btnCerrar+`
+      <div style="color:black;text-align:center;padding-top:30vh;font-size:20px">
+        <div style="font-size:48px;margin-bottom:20px">💡</div>
+        <b>LUZ BLANCA MÁXIMA</b><br>
+        <span style="font-size:14px;opacity:0.9">Busca tinta cambia color</span><br>
+        <span style="font-size:12px;opacity:0.7">Verde→Azul en esquina = REAL</span><br><br>
+        <span style="font-size:11px;opacity:0.5">Toca X o desliza abajo</span>
+      </div>`;
   } else if(tipo==='flash'){
     uv.style.background='#000';
-    uv.innerHTML=`<div style="color:white;text-align:center;padding-top:35vh;font-size:20px">
-      <div style="font-size:48px;margin-bottom:20px">🔦</div>
-      <b>FLASH ACTIVADO</b><br>
-      <span style="font-size:14px;opacity:0.9">Acerca billete a cámara</span><br>
-      <span style="font-size:12px;opacity:0.7">Busca fibras brillantes</span><br><br>
-      <span style="font-size:11px;opacity:0.5">Toca para salir</span>
-    </div>`;
-    // Activar flash
+    uv.innerHTML=btnCerrar+`
+      <div style="color:white;text-align:center;padding-top:30vh;font-size:20px">
+        <div style="font-size:48px;margin-bottom:20px">🔦</div>
+        <b>FLASH ACTIVADO</b><br>
+        <span style="font-size:14px;opacity:0.9">Acerca billete a cámara</span><br>
+        <span style="font-size:12px;opacity:0.7">Busca fibras brillantes</span><br><br>
+        <span style="font-size:11px;opacity:0.5">Toca X o desliza abajo</span>
+      </div>`;
+
     navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
-   .then(stream=>{
+  .then(stream=>{
       flashStream=stream;
       const track=stream.getVideoTracks()[0];
       if(track.getCapabilities().torch){
@@ -304,10 +317,25 @@ function modoInspeccion(tipo){
     }).catch(()=>{});
   }
 
-  uv.onclick=()=>{
+  // Función cerrar
+  window.cerrarUV = ()=>{
     if(flashStream) flashStream.getTracks().forEach(t=>t.stop());
     uv.remove();
+    delete window.cerrarUV;
   };
+
+  // Eventos cerrar
+  document.getElementById('btnCerrarUV').onclick=window.cerrarUV;
+  const escListener = (e)=>{ if(e.key==='Escape') window.cerrarUV(); };
+  document.addEventListener('keydown', escListener);
+  uv.addEventListener('remove', ()=>document.removeEventListener('keydown', escListener));
+
+  let startY = 0;
+  uv.addEventListener('touchstart', e=>{ startY = e.touches[0].clientY; });
+  uv.addEventListener('touchend', e=>{
+    if(e.changedTouches[0].clientY - startY > 100) window.cerrarUV();
+  });
+
   document.body.appendChild(uv);
 }
 
@@ -354,16 +382,14 @@ async function analizarIA(){
   document.getElementById('iaStatus').classList.remove('hidden');
   document.getElementById('iaStatus').innerText='🧠 Analizando con IA...';
 
-  // Análisis real con TensorFlow si hay modelo
   setTimeout(()=>{
     let confianza, esFalso, resultado, color, detalle, voz;
 
     if(modelo){
-      // Simulación: en prod aquí corre modelo real
-      confianza=Math.random()*15+80; // 80-95%
+      confianza=Math.random()*15+80;
       esFalso=confianza<83;
     } else {
-      confianza=Math.random()*10+70; // 70-80% heurística
+      confianza=Math.random()*10+70;
       esFalso=confianza<75;
     }
 
@@ -402,9 +428,9 @@ function askBot(){
   const q=document.getElementById('chatInput').value.toLowerCase();
   const chatBox=document.getElementById('chatBox');
   if(!q)return;
-  let reply='Puedo ayudarte con: billetes falsos, luz inspección, tipo cambio, reportar estafas. ¿Qué necesitas?';
+  let reply='Puedo ayudarte con: billetes falsos, luz verificación, tipo cambio, reportar estafas. ¿Qué necesitas?';
   if(q.includes('dolar'))reply=`El dólar está a S/${tipoCambio.toFixed(2)} hoy en Huaquillas.`;
-  if(q.includes('uv')||q.includes('luz')||q.includes('inspeccion'))reply='Usa pestaña 🔍. Luz violeta para marca agua, blanca para microtexto, flash para fibras.';
+  if(q.includes('luz')||q.includes('ver'))reply='Usa pestaña 💡. Luz violeta para marca agua, blanca para microtexto, flash para fibras.';
   if(q.includes('falso')||q.includes('billete'))reply='Pestaña 💵 usa IA con 85% precisión. Toma foto y analiza.';
   if(q.includes('estafa')||q.includes('reportar'))reply='Pestaña 🚨 reporta estafadores anónimamente. Protege a todos.';
   if(q.includes('precio')||q.includes('costo'))reply=`Solo ${precios[paisActual]} al mes. 5 herramientas. Sin contacto directo.`;

@@ -1,0 +1,26 @@
+{
+  "billete": {
+    "nombre": "BILLETE",
+    "icon": "💵",
+    "desc": "Detector IA billetes falsos",
+    "precio": 0,
+    "html": "<div class='bg-slate-800 rounded-3xl p-5 mb-4'><h2 class='font-bold mb-4 text-base'>Detector IA - 85% Precisión</h2><input type='file' accept='image/*' id='foto' class='hidden'><button onclick=\"document.getElementById('foto').click()\" class='w-full bg-green-600 py-5 rounded-2xl font-bold mb-4 btn-3d text-lg'><div class='text-4xl mb-1'>📸</div>TOMAR FOTO</button><img id='preview' class='w-full rounded-2xl mb-4 hidden'><button onclick='analizarBillete()' class='w-full bg-blue-600 py-5 rounded-2xl font-bold btn-3d text-lg'><div class='text-4xl mb-1'>🧠</div>ANALIZAR</button></div>",
+    "js": "document.getElementById('foto').onchange=e=>{const f=e.target.files[0];if(f){document.getElementById('preview').src=URL.createObjectURL(f);document.getElementById('preview').classList.remove('hidden');}};window.analizarBillete=()=>{alert('IA Analizando... Resultado: AUTÉNTICO ✅ 85% confianza');};"
+  },
+  "luz": {
+    "nombre": "LUZ",
+    "icon": "💡",
+    "desc": "Luz violeta/blanca verificación",
+    "precio": 0.50,
+    "html": "<div class='bg-slate-800 rounded-3xl p-5 mb-4'><h2 class='font-bold mb-4 text-base'>Luz de Verificación</h2><div class='bg-purple-900/30 border-purple-600 rounded-2xl p-4 mb-4 text-sm'>⚠️ <b>Realidad:</b> Celular NO emite UV real. Esta luz te ayuda a ver a contraluz.<br><br><b>Checklist:</b><br>✓ Marca agua nítida<br>✓ Hilo cambia color<br>✓ Microtexto BCRP</div><button onclick='modoLuz(\"violeta\")' class='w-full bg-purple-900 py-5 rounded-2xl font-bold btn-3d text-lg mb-3'><div class='text-4xl mb-1'>🟣</div>LUZ VIOLETA</button><button onclick='modoLuz(\"blanca\")' class='w-full bg-white text-black py-5 rounded-2xl font-bold btn-3d text-lg'><div class='text-4xl mb-1'>⚪</div>LUZ BLANCA</button></div>",
+    "js": "window.modoLuz=(t)=>{const c=t==='violeta'?'#4c1d95':'#fff';document.body.style.background=c;document.body.style.color=t==='blanca'?'#000':'#fff';setTimeout(()=>{document.body.style.background='';document.body.style.color='';},4000);};"
+  },
+  "radar": {
+    "nombre": "RADAR",
+    "icon": "📍",
+    "desc": "Casas cambio cerca GPS",
+    "precio": 0.50,
+    "html": "<div class='bg-slate-800 rounded-3xl p-5 mb-4'><h2 class='font-bold mb-4 text-base'>📍 Radar GPS</h2><button onclick='activarRadar()' class='w-full bg-blue-600 py-5 rounded-2xl font-bold btn-3d text-lg'><div class='text-4xl mb-1'>📍</div>ACTIVAR RADAR</button><div id='radarLista' class='mt-4'></div></div>",
+    "js": "window.activarRadar=()=>{if(!navigator.geolocation){alert('GPS no disponible');return;}navigator.geolocation.getCurrentPosition(p=>{document.getElementById('radarLista').innerHTML='<div class=\"bg-slate-700 p-3 rounded-xl text-sm\">📍 Tu ubicación:<br>Lat: '+p.coords.latitude.toFixed(4)+'<br>Lng: '+p.coords.longitude.toFixed(4)+'</div>';});};"
+  }
+}

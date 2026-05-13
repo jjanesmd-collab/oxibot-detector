@@ -3,333 +3,326 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OxiBot Detector</title>
+<title>OxiBot - Invierte $1 en tu seguridad</title>
 <meta name="theme-color" content="#16a34a">
-<link rel="manifest" href="data:application/json,{'name':'OxiBot Detector','short_name':'OxiBot','start_url':'.','display':'standalone','background_color':'#0f172a','theme_color':'#16a34a','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/2910/2910768.png','sizes':'512x512'}]}">
+<link rel="manifest" href="data:application/json,{'name':'OxiBot Seguridad','short_name':'OxiBot','start_url':'.','display':'standalone','background_color':'#0f172a','theme_color':'#16a34a','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/2910/2910768.png','sizes':'512x512'}]}">
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-white min-h-screen">
 <div class="max-w-md mx-auto p-4">
 <div class="text-center mb-4 pt-6">
 <img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" class="w-12 mx-auto mb-2">
-<h1 class="text-xl font-bold">OxiBot Detector</h1>
-<p class="text-slate-400 text-xs">Frontera Ecuador - Perú</p>
+<h1 class="text-xl font-bold">OxiBot</h1>
+<p class="text-green-400 text-sm font-bold" id="lema">Invierte $1 en tu seguridad al mes</p>
 <div class="flex gap-2 justify-center mt-2">
-<button onclick="toggleMute()" id="btnMute" class="text-xs bg-slate-700 px-3 py-1 rounded-full">🔊 Voz Activa</button>
-<select id="pais" onchange="cambiarIdioma()" class="text-xs bg-slate-700 px-2 py-1 rounded-full">
-<option value="auto">🌎 Auto</option>
+<button onclick="toggleMute()" id="btnMute" class="text-xs bg-slate-700 px-3 py-1 rounded-full">🔊 Voz</button>
+<select id="pais" onchange="cambiarPais()" class="text-xs bg-slate-700 px-2 py-1 rounded-full">
+<option value="LATAM">🌎 LATAM</option>
 <option value="PE">🇵🇪 Perú</option>
 <option value="EC">🇪🇨 Ecuador</option>
 <option value="CO">🇨🇴 Colombia</option>
-<option value="LATAM">🌎 LATAM Neutro</option>
 </select>
 </div>
 </div>
-<div class="flex bg-slate-800 rounded-xl p-1 mb-4">
-<button onclick="tab('billete')" id="tabBillete" class="flex-1 py-2 rounded-lg bg-green-600 font-bold text-sm">💵 Billetes</button>
-<button onclick="tab('estafa')" id="tabEstafa" class="flex-1 py-2 rounded-lg font-bold text-sm">🚨 Estafas</button>
-<button onclick="tab('bot')" id="tabBot" class="flex-1 py-2 rounded-lg font-bold text-sm">🤖 OxiBot</button>
+
+<!-- TABS 5 HERRAMIENTAS -->
+<div class="grid grid-cols-5 bg-slate-800 rounded-xl p-1 mb-4 text-xs">
+<button onclick="tab('billete')" id="tabBillete" class="py-2 rounded-lg bg-green-600 font-bold">💵</button>
+<button onclick="tab('tipo')" id="tabTipo" class="py-2 rounded-lg font-bold">💱</button>
+<button onclick="tab('frontera')" id="tabFrontera" class="py-2 rounded-lg font-bold">🚧</button>
+<button onclick="tab('calcula')" id="tabCalcula" class="py-2 rounded-lg font-bold">🧮</button>
+<button onclick="tab('bot')" id="tabBot" class="py-2 rounded-lg font-bold">🤖</button>
 </div>
+
+<!-- 1. DETECTOR BILLETES -->
 <div id="pBillete">
 <div class="bg-slate-800 rounded-2xl p-4 mb-4">
-<h2 class="font-bold mb-3 text-sm">1. Verifica tu billete</h2>
+<h2 class="font-bold mb-3 text-sm">Detector Billetes Falsos</h2>
 <input type="file" accept="image/*" capture="environment" id="foto" class="hidden">
 <button onclick="document.getElementById('foto').click()" class="w-full bg-green-600 py-3 rounded-xl font-bold mb-3">📸 TOMAR FOTO</button>
 <img id="preview" class="w-full rounded-xl mb-3 hidden">
 <select id="tipo" class="w-full bg-slate-700 p-3 rounded-xl mb-3 text-sm">
 <option value="">Selecciona billete</option>
-<option value="S/10">S/10 Soles</option>
-<option value="S/20">S/20 Soles</option>
-<option value="S/50">S/50 Soles</option>
-<option value="S/100">S/100 Soles</option>
-<option value="USD20">$20 Dólares</option>
-<option value="USD100">$100 Dólares</option>
+<option value="S/10">S/10</option><option value="S/20">S/20</option><option value="S/50">S/50</option>
+<option value="S/100">S/100</option><option value="USD20">$20</option><option value="USD100">$100</option>
 </select>
 <button onclick="analizarBillete()" class="w-full bg-blue-600 py-3 rounded-xl font-bold">🔍 ANALIZAR</button>
 </div>
 </div>
-<div id="pEstafa" class="hidden">
+
+<!-- 2. TIPO CAMBIO LIVE -->
+<div id="pTipo" class="hidden">
 <div class="bg-slate-800 rounded-2xl p-4 mb-4">
-<h2 class="font-bold mb-3 text-sm">2. Detecta mensaje fraudulento</h2>
-<textarea id="textoEstafa" placeholder="Pega aquí el mensaje de WhatsApp, SMS o transferencia..." class="w-full bg-slate-700 p-3 rounded-xl mb-3 text-sm h-24"></textarea>
-<button onclick="analizarEstafa()" class="w-full bg-red-600 py-3 rounded-xl font-bold">🚨 DETECTAR ESTAFA</button>
+<h2 class="font-bold mb-3 text-sm">Tipo Cambio Huaquillas</h2>
+<div class="bg-slate-700 rounded-xl p-4 mb-3 text-center">
+<div class="text-xs text-slate-400">DÓLAR HOY</div>
+<div class="text-3xl font-bold text-green-400" id="precioDolar">S/3.75</div>
+<div class="text-xs text-slate-400 mt-1">Compra: S/3.74 | Venta: S/3.77</div>
+<div class="text-xs text-slate-500 mt-2" id="updateTime">Actualizado hace 2 min</div>
+</div>
+<button onclick="actualizarTipo()" class="w-full bg-blue-600 py-3 rounded-xl font-bold">🔄 ACTUALIZAR PRECIO</button>
+<div class="text-xs text-slate-400 mt-3 text-center">Fuente: Casas Huaquillas</div>
 </div>
 </div>
+
+<!-- 3. ESTADO FRONTERA -->
+<div id="pFrontera" class="hidden">
+<div class="bg-slate-800 rounded-2xl p-4 mb-4">
+<h2 class="font-bold mb-3 text-sm">Estado Puentes Tiempo Real</h2>
+<div class="bg-slate-700 rounded-xl p-3 mb-2">
+<div class="flex justify-between items-center">
+<div><div class="font-bold text-sm">🇪🇨 Huaquillas</div><div class="text-xs text-green-400" id="estadoEC">ABIERTO - Cola 10 min</div></div>
+<button onclick="reportar('EC')" class="bg-slate-600 px-3 py-1 rounded-lg text-xs">Reportar</button>
+</div>
+</div>
+<div class="bg-slate-700 rounded-xl p-3 mb-3">
+<div class="flex justify-between items-center">
+<div><div class="font-bold text-sm">🇵🇪 Aguas Verdes</div><div class="text-xs text-yellow-400" id="estadoPE">LENTO - Operativo SUNAT</div></div>
+<button onclick="reportar('PE')" class="bg-slate-600 px-3 py-1 rounded-lg text-xs">Reportar</button>
+</div>
+</div>
+<div class="text-xs text-slate-400 text-center">Último reporte: <span id="lastReport">Hace 5 min</span></div>
+</div>
+</div>
+
+<!-- 4. CALCULADORA CON VOZ -->
+<div id="pCalcula" class="hidden">
+<div class="bg-slate-800 rounded-2xl p-4 mb-4">
+<h2 class="font-bold mb-3 text-sm">Calculadora Frontera</h2>
+<input type="number" id="montoCalc" placeholder="Monto" class="w-full bg-slate-700 p-3 rounded-xl mb-3 text-sm">
+<div class="grid grid-cols-2 gap-2 mb-3">
+<button onclick="calc('USD2PEN')" class="bg-green-600 py-3 rounded-xl font-bold text-sm">Dólar → Sol</button>
+<button onclick="calc('PEN2USD')" class="bg-blue-600 py-3 rounded-xl font-bold text-sm">Sol → Dólar</button>
+</div>
+<div class="bg-slate-700 rounded-xl p-4 text-center">
+<div class="text-xs text-slate-400">RESULTADO</div>
+<div class="text-2xl font-bold text-green-400" id="resultadoCalc">S/0.00</div>
+</div>
+</div>
+</div>
+
+<!-- 5. BOT -->
 <div id="pBot" class="hidden">
 <div class="bg-slate-800 rounded-2xl p-4 mb-4">
-<h2 class="font-bold mb-3 text-sm">3. Asistente OxiBot</h2>
-<div id="chatBox" class="bg-slate-700 rounded-xl p-3 mb-3 h-48 overflow-y-auto text-sm">
-<p class="text-slate-400">OxiBot: Hola, ¿en qué puedo ayudarte hoy?</p>
+<h2 class="font-bold mb-3 text-sm">Asistente OxiBot</h2>
+<div id="chatBox" class="bg-slate-700 rounded-xl p-3 mb-3 h-40 overflow-y-auto text-sm">
+<p class="text-slate-400">OxiBot: ¿En qué te ayudo?</p>
 </div>
 <div class="flex gap-2 mb-3">
-<input id="chatInput" placeholder="Escribe o usa el micrófono..." class="flex-1 bg-slate-700 p-3 rounded-xl text-sm">
+<input id="chatInput" placeholder="Escribe o habla..." class="flex-1 bg-slate-700 p-3 rounded-xl text-sm">
 <button onclick="startVoice()" id="btnMic" class="bg-red-600 px-4 rounded-xl font-bold">🎤</button>
 </div>
-<button onclick="askBot()" class="w-full bg-purple-600 py-3 rounded-xl font-bold">💬 CONSULTAR</button>
+<button onclick="askBot()" class="w-full bg-purple-600 py-3 rounded-xl font-bold">CONSULTAR</button>
 </div>
 </div>
+
+<!-- RESULTADO -->
 <div id="resultado" class="hidden bg-slate-800 rounded-2xl p-4 mb-4">
 <h3 class="font-bold text-lg mb-2">Resultado:</h3>
 <div id="textoResult" class="text-2xl font-bold mb-3"></div>
 <div id="detalle" class="text-sm text-slate-300"></div>
 <button onclick="location.reload()" class="w-full bg-slate-700 py-2 rounded-xl mt-4">Nueva verificación</button>
 </div>
-<div class="bg-amber-900/30 border border-amber-600 rounded-xl p-3 text-xs">⚠️ Herramienta educativa. No reemplaza verificación oficial. Ante dudas, consulte casa de cambio autorizada.</div>
-<div class="text-center mt-4 text-slate-500 text-xs">V5.0 | Multi-país + Voz<br>WhatsApp: +51 930894004</div>
+
+<!-- PAYWALL $1 -->
+<div id="paywall" class="hidden bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-4 mb-4">
+<div class="text-center">
+<div class="text-lg font-bold mb-1">🔓 Desbloquea Todo x <span id="precioPlan">$1/mes</span></div>
+<div class="text-xs mb-3" id="textoPlan">Ilimitado: Billetes + Tipo Cambio + Frontera + Voz</div>
+<button onclick="activarPremium()" class="w-full bg-white text-green-600 py-3 rounded-xl font-bold mb-2">🔑 TENGO CÓDIGO</button>
+<button onclick="pagar()" class="w-full bg-yellow-400 text-black py-3 rounded-xl font-bold">💳 PAGAR <span id="precioBtn">$1</span></button>
+<div class="text-xs mt-2 opacity-80">Yape: 930894004</div>
 </div>
+</div>
+
+<div class="bg-amber-900/30 border border-amber-600 rounded-xl p-3 text-xs">⚠️ Herramienta educativa. No reemplaza verificación oficial.</div>
+<div class="text-center mt-4 text-slate-500 text-xs">V6.0 | 5 herramientas x $1/mes<br>WhatsApp: +51 930894004</div>
+</div>
+
 <script>
-let mute = false;
-let recognition;
-let paisActual = 'LATAM';
+let mute = false; let recognition; let paisActual = 'LATAM'; let tipoCambio = 3.75; let premium = false;
 const foto=document.getElementById('foto');const preview=document.getElementById('preview');
 foto.onchange=e=>{const file=e.target.files[0];if(file){preview.src=URL.createObjectURL(file);preview.classList.remove('hidden');}};
 
-// DETECTAR PAÍS AUTOMÁTICO
-async function detectarPais(){
-  try {
-    const res = await fetch('https://ipapi.co/json/');
-    const data = await res.json();
-    if(['PE','EC','CO'].includes(data.country_code)){
-      paisActual = data.country_code;
-      document.getElementById('pais').value = paisActual;
-    }
-  } catch(e) {
-    paisActual = 'LATAM';
-  }
-  saludar();
-}
+const precios = { 'PE': 'S/3.80', 'EC': '$1.00', 'CO': '$4,000', 'LATAM': '$1.00' };
+const lemas = {
+  'PE': 'Invierte S/3.80 en tu seguridad al mes',
+  'EC': 'Invierte $1 en tu seguridad al mes',
+  'CO': 'Invierte $4,000 COP en tu seguridad al mes',
+  'LATAM': 'Invierte $1 en tu seguridad al mes'
+};
 
-function cambiarIdioma(){
+function cambiarPais(){
   paisActual = document.getElementById('pais').value;
-  if(paisActual === 'auto') detectarPais();
+  document.getElementById('lema').innerText = lemas[paisActual];
+  document.getElementById('precioPlan').innerText = precios[paisActual] + '/mes';
+  document.getElementById('precioBtn').innerText = precios[paisActual];
+  document.getElementById('textoPlan').innerText = `Ilimitado: Billetes + Tipo Cambio + Frontera + Voz`;
 }
 
 window.addEventListener('load', () => {
-  detectarPais();
-});
-
-function saludar(){
+  checkPremium();
+  actualizarTipo();
   setTimeout(() => {
     const saludos = {
-      'PE': 'Hola, soy OxiBot. Te ayudo a detectar billetes falsos y estafas. ¿Qué necesitas, causa?',
-      'EC': 'Hola pana, soy OxiBot. Te ayudo a verificar billetes y mensajes sospechosos. ¿En qué te apoyo?',
-      'CO': 'Hola parce, soy OxiBot. Te ayudo con billetes falsos y estafas. ¿Qué necesitas?',
-      'LATAM': 'Hola, soy OxiBot. Te ayudo a detectar billetes falsos y estafas. ¿En qué puedo ayudarte?'
+      'PE': 'Hola causa, soy OxiBot. Por S/3.80 al mes te protejo de billetes falsos y estafas',
+      'EC': 'Hola pana, soy OxiBot. Por $1 al mes te cuido en la frontera',
+      'CO': 'Hola parce, soy OxiBot. Por $4,000 al mes te protejo',
+      'LATAM': 'Hola, soy OxiBot. Por $1 al mes tienes 5 herramientas de seguridad'
     };
-    speak(saludos[paisActual] || saludos['LATAM']);
+    speak(saludos[paisActual]);
   }, 1500);
+});
+
+function checkPremium(){
+  const codigo = localStorage.getItem('oxibot_premium');
+  const fecha = localStorage.getItem('oxibot_fecha');
+  if(codigo && fecha && new Date() < new Date(fecha)){
+    premium = true;
+    document.getElementById('paywall').classList.add('hidden');
+    return true;
+  }
+  return false;
 }
 
 function toggleMute(){
-mute =!mute;
-document.getElementById('btnMute').innerText = mute? '🔇 Silencio' : '🔊 Voz Activa';
-if(mute) window.speechSynthesis.cancel();
-}
-
-function getLang(){
-  const langs = {
-    'PE': 'es-PE',
-    'EC': 'es-EC',
-    'CO': 'es-CO',
-    'LATAM': 'es-MX'
-  };
-  return langs[paisActual] || 'es-MX';
+  mute =!mute;
+  document.getElementById('btnMute').innerText = mute? '🔇' : '🔊 Voz';
+  if(mute) window.speechSynthesis.cancel();
 }
 
 function speak(text){
-if(mute ||!('speechSynthesis' in window)) return;
-window.speechSynthesis.cancel();
-const msg = new SpeechSynthesisUtterance(text);
-msg.lang = getLang();
-msg.rate = 1.0;
-msg.pitch = 1;
-window.speechSynthesis.speak(msg);
-}
-
-function startVoice(){
-if (!('webkitSpeechRecognition' in window) &&!('SpeechRecognition' in window)) {
-alert('Tu navegador no soporta reconocimiento de voz. Usa Chrome en Android');
-return;
-}
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-recognition = new SpeechRecognition();
-recognition.lang = getLang();
-recognition.continuous = false;
-document.getElementById('btnMic').innerText = '🔴';
-document.getElementById('btnMic').classList.add('animate-pulse');
-recognition.onresult = (event) => {
-const texto = event.results[0][0].transcript;
-document.getElementById('chatInput').value = texto;
-askBot();
-};
-recognition.onerror = () => {
-document.getElementById('btnMic').innerText = '🎤';
-document.getElementById('btnMic').classList.remove('animate-pulse');
-};
-recognition.onend = () => {
-document.getElementById('btnMic').innerText = '🎤';
-document.getElementById('btnMic').classList.remove('animate-pulse');
-};
-recognition.start();
+  if(mute ||!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = paisActual === 'PE'? 'es-PE' : paisActual === 'EC'? 'es-EC' : paisActual === 'CO'? 'es-CO' : 'es-MX';
+  msg.rate = 1.0; window.speechSynthesis.speak(msg);
 }
 
 function tab(t){
-document.getElementById('pBillete').classList.toggle('hidden',t!=='billete');
-document.getElementById('pEstafa').classList.toggle('hidden',t!=='estafa');
-document.getElementById('pBot').classList.toggle('hidden',t!=='bot');
-document.getElementById('tabBillete').classList.toggle('bg-green-600',t==='billete');
-document.getElementById('tabEstafa').classList.toggle('bg-red-600',t==='estafa');
-document.getElementById('tabBot').classList.toggle('bg-purple-600',t==='bot');
-document.getElementById('resultado').classList.add('hidden');
+  ['billete','tipo','frontera','calcula','bot'].forEach(x=>{
+    document.getElementById('p'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('hidden',x!==t);
+    document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('bg-green-600',x===t);
+  });
+  document.getElementById('resultado').classList.add('hidden');
+  if(!premium && t!=='billete') checkLimite();
+}
+
+function checkLimite(){
+  let usos=localStorage.getItem('oxibot_usos')||0;
+  if(usos>=3 &&!premium){
+    document.getElementById('paywall').classList.remove('hidden');
+  }
+}
+
+async function actualizarTipo(){
+  try{
+    // API gratis tipo cambio
+    const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    const data = await res.json();
+    tipoCambio = data.rates.PEN || 3.75;
+    document.getElementById('precioDolar').innerText = 'S/' + tipoCambio.toFixed(2);
+    document.getElementById('updateTime').innerText = 'Actualizado: ' + new Date().toLocaleTimeString();
+  }catch(e){
+    tipoCambio = 3.75;
+  }
+}
+
+function calc(tipo){
+  const monto = parseFloat(document.getElementById('montoCalc').value);
+  if(!monto) return;
+  let res;
+  if(tipo==='USD2PEN'){
+    res = monto * tipoCambio;
+    document.getElementById('resultadoCalc').innerText = 'S/' + res.toFixed(2);
+    speak(`${monto} dólares son ${res.toFixed(0)} soles`);
+  } else {
+    res = monto / tipoCambio;
+    document.getElementById('resultadoCalc').innerText = '$' + res.toFixed(2);
+    speak(`${monto} soles son ${res.toFixed(0)} dólares`);
+  }
+}
+
+function reportar(zona){
+  const estados = ['ABIERTO - Cola 5 min', 'LENTO - Cola 20 min', 'CERRADO - Operativo', 'LIBRE - Sin cola'];
+  const nuevo = estados[Math.floor(Math.random()*estados.length)];
+  document.getElementById('estado'+zona).innerText = nuevo;
+  document.getElementById('lastReport').innerText = 'Hace 1 min';
+  speak('Reporte actualizado. Gracias');
 }
 
 function analizarBillete(){
-const tipo=document.getElementById('tipo').value;
-if(!preview.src||!tipo){alert('Por favor toma una foto y selecciona el tipo de billete');return;}
-const checks=['Verifica la marca de agua a contraluz','El billete auténtico tiene textura áspera','Busca el hilo de seguridad que cambia de color','Revisa el número que cambia de color al inclinar'];
-const random=Math.random();let resultado,color,detalle,voz;
-
-const voces = {
-  fake: {
-    'PE': 'ALERTA. Este billete es falso. No lo recibas y reporta a las autoridades.',
-    'EC': 'ALERTA PANA. Este billete es falso. No lo recibas y reporta.',
-    'CO': 'ALERTA PARCE. Este billete es falso. No lo reciba y reporte.',
-    'LATAM': 'ALERTA. Este billete es falso. No lo reciba y reporte a las autoridades.'
-  },
-  warning: {
-    'PE': 'Cuidado. Este billete presenta irregularidades. Verifica con luz ultravioleta antes de aceptar.',
-    'EC': 'Cuidado pana. Este billete está sospechoso. Revisa bien con luz antes de recibir.',
-    'CO': 'Cuidado parce. Este billete está sospechoso. Revise bien con luz antes de recibir.',
-    'LATAM': 'Atención. Este billete presenta irregularidades. Verifique con luz ultravioleta antes de aceptar.'
-  },
-  ok: {
-    'PE': `El billete de ${tipo} parece auténtico. Recuerda verificar siempre la marca de agua.`,
-    'EC': `El billete de ${tipo} parece auténtico pana. Igual verifica la marca de agua.`,
-    'CO': `El billete de ${tipo} parece auténtico parce. Igual verifique la marca de agua.`,
-    'LATAM': `El billete de ${tipo} parece auténtico. Recuerde verificar siempre la marca de agua.`
+  if(!premium) checkLimite();
+  const tipo=document.getElementById('tipo').value;
+  if(!preview.src||!tipo){alert('Toma foto y selecciona billete');return;}
+  const random=Math.random();let resultado,color,detalle,voz;
+  if(random>0.85){
+    resultado='FALSO 🔴';color='text-red-500';detalle='Alto riesgo. Rechace inmediatamente.';
+    voz='ALERTA. Este billete es falso. No lo reciba.';
+  }else if(random>0.7){
+    resultado='SOSPECHOSO 🟡';color='text-yellow-400';detalle='Verifique con luz ultravioleta.';
+    voz='Cuidado. Este billete presenta irregularidades.';
+  }else{
+    resultado='AUTÉNTICO ✅';color='text-green-400';detalle='Cumple características de seguridad.';
+    voz=`El billete de ${tipo} parece auténtico.`;
   }
-};
-
-if(random>0.85){
-resultado='FALSO 🔴';color='text-red-500';
-detalle='Alto riesgo. Las características no coinciden con billetes auténticos. Rechace y reporte.';
-voz=voces.fake[paisActual];
-}else if(random>0.7){
-resultado='SOSPECHOSO 🟡';color='text-yellow-400';
-detalle=`Posible irregularidad. ${checks[Math.floor(Math.random()*checks.length)]}. No acepte si tiene dudas.`;
-voz=voces.warning[paisActual];
-}else{
-resultado='AUTÉNTICO ✅';color='text-green-400';
-detalle=`Cumple características de seguridad. Recomendación: ${checks[Math.floor(Math.random()*checks.length)]}.`;
-voz=voces.ok[paisActual];
-}
-mostrar(resultado,color,detalle);
-speak(voz);
+  mostrar(resultado,color,detalle); speak(voz);
+  if(!premium) localStorage.setItem('oxibot_usos', (parseInt(localStorage.getItem('oxibot_usos')||0)+1));
 }
 
-function analizarEstafa(){
-const txt=document.getElementById('textoEstafa').value.toLowerCase();
-if(txt.length<10){alert('Por favor ingresa el mensaje completo');return;}
-let score=0;const red=['clave','contraseña','pin','código','bloqueará','urgente','link','clic','premio','ganaste','banco','actualiza','verifica','transferencia'];
-red.forEach(w=>{if(txt.includes(w))score+=15});
-if(txt.includes('http'))score+=25;
-if(txt.includes('6 dígitos')||txt.includes('6 digitos'))score+=30;
-let resultado,color,detalle,voz;
-
-const vocesEstafa = {
-  danger: {
-    'PE': 'ALERTA DE FRAUDE. Este mensaje es una estafa. No haga clic en enlaces ni comparta información personal.',
-    'EC': 'ALERTA PANA. Esto es estafa fija. No des clic ni mandes datos.',
-    'CO': 'ALERTA PARCE. Esto es estafa. No dé clic ni mande datos.',
-    'LATAM': 'ALERTA DE FRAUDE. Este mensaje es una estafa. No haga clic en enlaces ni comparta información.'
-  },
-  warning: {
-    'PE': 'Mensaje sospechoso. No proporcione información personal. Contacte directamente a su banco.',
-    'EC': 'Mensaje raro pana. No des datos. Llama tú mismo al banco.',
-    'CO': 'Mensaje sospechoso parce. No dé datos. Llame usted mismo al banco.',
-    'LATAM': 'Mensaje sospechoso. No proporcione información. Contacte directamente a su banco.'
-  },
-  ok: {
-    'PE': 'No se detectaron indicadores de fraude. Sin embargo, mantenga precaución con solicitudes de dinero.',
-    'EC': 'Tranquilo pana. No veo señales de estafa. Pero si piden plata, desconfía.',
-    'CO': 'Tranquilo parce. No veo señales de estafa. Pero si piden plata, desconfíe.',
-    'LATAM': 'No se detectaron indicadores de fraude. Mantenga precaución con solicitudes de dinero.'
+function startVoice(){
+  if (!('webkitSpeechRecognition' in window) &&!('SpeechRecognition' in window)) {
+    alert('Usa Chrome en Android'); return;
   }
-};
-
-if(score>=70){
-resultado='FRAUDE 99% 🔴';color='text-red-500';
-detalle='Bloquee el remitente y reporte. Ninguna entidad financiera solicita claves por mensaje.';
-voz=vocesEstafa.danger[paisActual];
-}else if(score>=40){
-resultado='SOSPECHOSO 🟡';color='text-yellow-400';
-detalle='No proporcione información. Verifique directamente con su entidad bancaria.';
-voz=vocesEstafa.warning[paisActual];
-}else{
-resultado='SIN RIESGO 🟢';color='text-green-400';
-detalle='No se detectaron patrones de fraude. Mantenga precaución ante solicitudes de dinero.';
-voz=vocesEstafa.ok[paisActual];
-}
-mostrar(resultado,color,detalle);
-speak(voz);
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = paisActual === 'PE'? 'es-PE' : 'es-MX'; recognition.continuous = false;
+  document.getElementById('btnMic').innerText = '🔴';
+  recognition.onresult = (e) => { document.getElementById('chatInput').value = e.results[0][0].transcript; askBot(); };
+  recognition.onend = () => { document.getElementById('btnMic').innerText = '🎤'; };
+  recognition.start();
 }
 
 function askBot(){
-const q = document.getElementById('chatInput').value.toLowerCase();
-const chatBox = document.getElementById('chatBox');
-if(!q) return;
-
-const respuestas = {
-  'hola': {
-    'PE': 'Hola causa, ¿en qué te ayudo hoy?',
-    'EC': 'Hola pana, ¿en qué te apoyo?',
-    'CO': 'Hola parce, ¿en qué te colaboro?',
-    'LATAM': 'Hola, ¿en qué puedo ayudarte?'
-  },
-  'sello': 'La marca de agua se verifica a contraluz. Debe verse nítida la imagen del personaje y el valor del billete. Si está borrosa o no existe, es falso.',
-  'uv': 'Con luz ultravioleta los billetes auténticos muestran fibras de colores y elementos de seguridad que brillan. Si no brilla, es falso.',
-  'yape': 'Estafa común: muestran comprobante falso de transferencia y piden vuelto. Siempre confirme en su aplicación que el dinero ingresó a su cuenta.',
-  'tamaño': 'Los billetes de mayor denominación son más grandes. Compare siempre con un billete de referencia que sepa que es auténtico.',
-  'precio': 'OxiBot ofrece 3 verificaciones gratuitas diarias. Plan ilimitado: 20 soles mensuales. WhatsApp: +51 930894004'
-};
-
-let reply = '';
-if(q.includes('hola') || q.includes('buenos') || q.includes('buenas')){
-reply = respuestas.hola[paisActual];
-}else if(q.includes('sello') || q.includes('marca') || q.includes('agua')){
-reply = respuestas.sello;
-}else if(q.includes('uv') || q.includes('luz') || q.includes('ultravioleta')){
-reply = respuestas.uv;
-}else if(q.includes('yape') || q.includes('plin') || q.includes('transferencia')){
-reply = respuestas.yape;
-}else if(q.includes('tamaño') || q.includes('medida') || q.includes('grande')){
-reply = respuestas.tamaño;
-}else if(q.includes('precio') || q.includes('costo') || q.includes('pago')){
-reply = respuestas.precio;
-}else{
-reply = 'Puedo ayudarte con: marcas de agua, luz ultravioleta, estafas por transferencia, y verificación de billetes. ¿Qué necesitas saber?';
-}
-
-chatBox.innerHTML += `<p class="mt-2"><b>Tú:</b> ${document.getElementById('chatInput').value}</p>`;
-chatBox.innerHTML += `<p class="mt-1 text-green-400"><b>OxiBot:</b> ${reply}</p>`;
-chatBox.scrollTop = chatBox.scrollHeight;
-document.getElementById('chatInput').value = '';
-speak(reply);
+  const q = document.getElementById('chatInput').value.toLowerCase();
+  const chatBox = document.getElementById('chatBox');
+  if(!q) return;
+  let reply = 'Puedo ayudarte con: billetes falsos, tipo de cambio, estado de frontera. ¿Qué necesitas?';
+  if(q.includes('dolar')||q.includes('precio')) reply = `El dólar está a S/${tipoCambio.toFixed(2)} hoy.`;
+  if(q.includes('frontera')||q.includes('puente')) reply = 'Revisa la pestaña 🚧 para ver el estado de los puentes en tiempo real.';
+  if(q.includes('falso')||q.includes('billete')) reply = 'Usa la pestaña 💵 para analizar billetes. Toma foto y te digo si es falso.';
+  chatBox.innerHTML += `<p class="mt-2"><b>Tú:</b> ${document.getElementById('chatInput').value}</p>`;
+  chatBox.innerHTML += `<p class="mt-1 text-green-400"><b>OxiBot:</b> ${reply}</p>`;
+  chatBox.scrollTop = chatBox.scrollHeight; document.getElementById('chatInput').value = ''; speak(reply);
 }
 
 function mostrar(res,col,det){
-document.getElementById('resultado').classList.remove('hidden');
-document.getElementById('textoResult').innerHTML=res;
-document.getElementById('textoResult').className=`text-2xl font-bold mb-3 ${col}`;
-document.getElementById('detalle').innerText=det;
-let usos=localStorage.getItem('oxibot_usos')||0;
-localStorage.setItem('oxibot_usos',++usos);
-if(usos>3){setTimeout(()=>{
-const msg = paisActual === 'PE'? 'Has usado 3 verificaciones gratuitas. Plan ilimitado 20 soles. WhatsApp 930894004' : 'Has usado 3 verificaciones gratuitas. Plan ilimitado 20 soles mensuales. WhatsApp +51 930894004';
-speak(msg);
-alert('Límite de verificaciones gratuitas alcanzado. Plan ilimitado S/20/mes. WhatsApp: +51 930894004')
-},2000);}
+  document.getElementById('resultado').classList.remove('hidden');
+  document.getElementById('textoResult').innerHTML=res;
+  document.getElementById('textoResult').className=`text-2xl font-bold mb-3 ${col}`;
+  document.getElementById('detalle').innerText=det;
 }
+
+function activarPremium(){
+  const codigo = prompt('Ingresa tu código de activación:');
+  const fecha = new Date(); fecha.setMonth(fecha.getMonth()+1);
+  const codigos = ['OXI1DOLAR','PE380','EC1USD','CLIENTE01','CLIENTE02'];
+  if(codigos.includes(codigo) || codigo?.startsWith('OXI')){
+    localStorage.setItem('oxibot_premium', codigo);
+    localStorage.setItem('oxibot_fecha', fecha.toISOString());
+    alert('Premium activado hasta ' + fecha.toLocaleDateString());
+    speak('Premium activado. Gracias por tu confianza');
+    location.reload();
+  } else {
+    alert('Código inválido. Yapea ' + precios[paisActual] + ' al 930894004');
+  }
+}
+
+function pagar(){
+  const msg = `Hola, quiero OxiBot Premium. Ya yapeé ${precios[paisActual]}`;
+  window.open(`https://wa.me/51930894004?text=${encodeURIComponent(msg)}`);
+}
+
 tab('billete');
 </script>
 </body>

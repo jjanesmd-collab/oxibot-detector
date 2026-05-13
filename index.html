@@ -2,104 +2,233 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OxiBot Modular</title>
-<meta name="theme-color" content="#16a34a">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>OxiBot - Guardian IA $1</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-.btn-3d{box-shadow:0 8px 0 #0f5132,0 15px 20px rgba(0,0,0,0.4);transform:translateY(0);transition:all 0.1s}
-.btn-3d:active{box-shadow:0 2px 0 #0f5132,0 5px 10px rgba(0,0,0,0.4);transform:translateY(6px)}
-.tab-3d{box-shadow:0 4px 0 #1e293b,0 8px 15px rgba(0,0,0,0.3);transition:all 0.1s}
-.tab-3d.active{box-shadow:0 2px 0 #15803d,0 6px 12px rgba(22,163,74,0.4);transform:translateY(2px);background:linear-gradient(145deg,#16a34a,#15803d)}
-@keyframes slideIn{from{transform:translateY(100px);opacity:0}to{transform:translateY(0);opacity:1}}
-.card-enter{animation:slideIn 0.4s ease-out}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:linear-gradient(135deg,#0f172a,#1e293b);min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.btn-3d{transition:all.1s;box-shadow:0 6px 0 rgba(0,0,0,.4)}
+.btn-3d:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.4)}
+.card-enter{animation:slide.4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes slide{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.fade-out{animation:fadeout.5s forwards}
+@keyframes fadeout{to{opacity:0;transform:scale(0.8)}}
+.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
 </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen">
-<div class="max-w-md mx-auto p-4">
-<div class="text-center mb-4 pt-6">
-<img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" class="w-16 mx-auto mb-2">
-<h1 class="text-2xl font-bold">OxiBot</h1>
-<p class="text-green-400 text-sm font-bold">Modular v10.0</p>
+<body class="text-white pb-24">
+<div class="bg-gradient-to-r from-green-600 to-blue-600 p-4 sticky top-0 z-40 shadow-2xl">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="text-3xl">🛡️</div>
+<div>
+<div class="text-xl font-black">OxiBot</div>
+<div class="text-xs text-green-200" id="statusUser">GRATIS</div>
 </div>
-<div id="tabsContainer" class="grid grid-cols-5 gap-2 mb-5"></div>
-<div id="modulosContainer"></div>
 </div>
+<div class="text-right">
+<div class="text-xs text-green-200">Guardian IA</div>
+<div class="text-lg font-bold">$1/mes</div>
+</div>
+</div>
+</div>
+
+<div id="negociosBanner" class="bg-yellow-400 text-black p-2 text-center text-xs font-bold hidden"></div>
+
+<div class="p-3 space-y-3" id="app"></div>
+
+<div class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-lg border-t border-slate-700 p-2 flex justify-around">
+<button onclick="renderTab('billete')" class="flex-1 py-3 rounded-xl transition-all" id="tab-billete">
+<div class="text-2xl">💵</div><div class="text-xs font-bold mt-1">DETECTOR</div>
+</button>
+<button onclick="renderTab('scanner')" class="flex-1 py-3 rounded-xl transition-all" id="tab-scanner">
+<div class="text-2xl">🔍</div><div class="text-xs font-bold mt-1">SCANNER</div>
+</button>
+<button onclick="renderTab('cambio')" class="flex-1 py-3 rounded-xl transition-all" id="tab-cambio">
+<div class="text-2xl">💰</div><div class="text-xs font-bold mt-1">CAMBIO</div>
+</button>
+<button onclick="renderTab('tienda')" class="flex-1 py-3 rounded-xl transition-all" id="tab-tienda">
+<div class="text-2xl">➕</div><div class="text-xs font-bold mt-1">TIENDA</div>
+</button>
+</div>
+
 <script>
-let MODULOS_ACTIVOS = JSON.parse(localStorage.getItem('oxibot_modulos')||'["billete"]');
-let CONFIG_MODULOS = {};
-async function init(){
-  try{
-    const res = await fetch('./config/modulos.json');
-    CONFIG_MODULOS = await res.json();
-    cargarTabs();
-    cargarModulosActivos();
-  }catch(e){
-    console.log('Error cargando config, usando default');
-    CONFIG_MODULOS = {
-      "billete":{"nombre":"BILLETE","icon":"💵","desc":"Demo","precio":0,"html":"<div class='bg-slate-800 rounded-3xl p-5'><h2>Error: Carga config/modulos.json</h2></div>","js":""}
-    };
-    cargarTabs();
-    cargarModulosActivos();
+// ===== SISTEMA FREEMIUM GUARDIAN IA =====
+let usosHoy = parseInt(localStorage.getItem('oxibot_usos')||'0');
+let esGuardian = localStorage.getItem('oxibot_guardian')==='true';
+let fechaHoy = new Date().toDateString();
+let modulos = {};
+let modulosActivos = JSON.parse(localStorage.getItem('oxibot_modulos')||'["billete","scanner","cambio"]');
+
+// Reset diario
+if(localStorage.getItem('oxibot_fecha')!== fechaHoy){
+  usosHoy = 0;
+  localStorage.setItem('oxibot_usos','0');
+  localStorage.setItem('oxibot_fecha',fechaHoy);
+}
+
+// Actualizar status
+if(esGuardian) document.getElementById('statusUser').innerHTML = '🛡️ GUARDIAN ACTIVO';
+
+// ===== NEGOCIOS CERCA QUE APARECEN/DESAPARECEN =====
+const negociosFlash = [
+  {nombre:"Casa Cambio EL RAYO", desc:"Compra S/3.78 | 500m", tiempo:8000},
+  {nombre:"Yape Agente Oficial", desc:"Sin comisión | 200m", tiempo:6000},
+  {nombre:"Farmacia 24H", desc:"Descuento 20% | 1km", tiempo:7000},
+  {nombre:"Pollería EL GORDO", desc:"1/4 pollo S/12 | 300m", tiempo:9000}
+];
+
+function rotarNegocios(){
+  let i = 0;
+  setInterval(()=>{
+    const banner = document.getElementById('negociosBanner');
+    const n = negociosFlash[i % negociosFlash.length];
+    banner.innerHTML = `🔥 ${n.nombre} - ${n.desc} <span class="pulse">⚡</span>`;
+    banner.classList.remove('hidden','fade-out');
+    setTimeout(()=>{
+      banner.classList.add('fade-out');
+      setTimeout(()=>banner.classList.add('hidden'),500);
+    },n.tiempo-500);
+    i++;
+  },10000);
+}
+
+// ===== VERIFICAR LÍMITE FREEMIUM =====
+window.verificarLimite = function(){
+  if(esGuardian) return true;
+  if(usosHoy >= 3){
+    mostrarModalGuardian();
+    return false;
   }
+  usosHoy++;
+  localStorage.setItem('oxibot_usos',usosHoy);
+  updateContador();
+  return true;
 }
-function cargarTabs(){
-  const cont = document.getElementById('tabsContainer');
-  cont.innerHTML = '';
-  MODULOS_ACTIVOS.forEach(id=>{
-    const m = CONFIG_MODULOS[id];
-    if(!m) return;
-    const btn = document.createElement('button');
-    btn.className = 'tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center';
-    btn.innerHTML = `<div class="text-3xl mb-1">${m.icon}</div><div class="text-[10px] font-bold">${m.nombre}</div>`;
-    btn.onclick = ()=>mostrarModulo(id);
-    cont.appendChild(btn);
-  });
-  const btnTienda = document.createElement('button');
-  btnTienda.className = 'tab-3d bg-blue-600 rounded-2xl py-4 flex flex-col items-center';
-  btnTienda.innerHTML = `<div class="text-3xl mb-1">➕</div><div class="text-[10px] font-bold">TIENDA</div>`;
-  btnTienda.onclick = mostrarTienda;
-  cont.appendChild(btnTienda);
-  if(MODULOS_ACTIVOS.length>0) setTimeout(()=>mostrarModulo(MODULOS_ACTIVOS[0]),100);
+
+function updateContador(){
+  const restantes = esGuardian? '∞' : (3-usosHoy);
+  const el = document.getElementById('contadorUsos');
+  if(el) el.textContent = `Usos hoy: ${restantes}`;
 }
-async function cargarModulosActivos(){
-  for(const id of MODULOS_ACTIVOS){
-    const m = CONFIG_MODULOS[id];
-    if(!m) continue;
-    const div = document.createElement('div');
-    div.id = `mod-${id}`;
-    div.className = 'hidden';
-    div.innerHTML = m.html;
-    document.getElementById('modulosContainer').appendChild(div);
-    if(m.js){
-      const script = document.createElement('script');
-      script.textContent = m.js;
-      document.body.appendChild(script);
-    }
-  }
-}
-function mostrarModulo(id){
-  document.querySelectorAll('#modulosContainer > div').forEach(d=>d.classList.add('hidden'));
-  const mod = document.getElementById(`mod-${id}`);
-  if(mod) mod.classList.remove('hidden');
-  document.querySelectorAll('.tab-3d').forEach(t=>t.classList.remove('active','bg-green-600'));
-  event.target.closest('.tab-3d').classList.add('active','bg-green-600');
-}
-function mostrarTienda(){
-  let html = '<div class="bg-slate-800 rounded-3xl p-5"><h2 class="font-bold mb-4">🛒 Tienda de Módulos</h2>';
-  Object.keys(CONFIG_MODULOS).forEach(id=>{
-    const m = CONFIG_MODULOS[id];
-    const activo = MODULOS_ACTIVOS.includes(id);
-    html += `<div class="bg-slate-700 rounded-2xl p-4 mb-3 flex justify-between items-center"><div><div class="font-bold">${m.icon} ${m.nombre}</div><div class="text-xs text-slate-400">${m.desc}</div><div class="text-xs text-green-400 mt-1">${m.precio==0?'GRATIS':'$'+m.precio+'/mes'}</div></div>${activo?'<div class="text-green-400 text-xs">✓ Activo</div>':`<button onclick="window.open('https://t.me/OxiBotSoporte?text=Quiero módulo: ${m.nombre}')" class="bg-green-600 px-4 py-2 rounded-xl text-xs font-bold">Activar</button>`}</div>`;
-  });
-  html += `<button onclick="window.open('https://t.me/OxiBotSoporte?text=Quiero PACK COMPLETO')" class="w-full bg-yellow-500 text-black py-4 rounded-2xl font-bold mt-4">🔥 PACK COMPLETO $1/mes</button></div>`;
+
+// ===== MODAL GUARDIAN IA =====
+window.mostrarModalGuardian = function(){
   const modal = document.createElement('div');
-  modal.className = 'fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 overflow-y-auto';
-  modal.innerHTML = html;
-  modal.onclick = (e)=>{ if(e.target===modal) modal.remove(); };
+  modal.className = 'fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4';
+  modal.innerHTML = `
+    <div class="bg-slate-800 rounded-3xl p-6 max-w-sm w-full card-enter">
+      <div class="text-center">
+        <div class="text-6xl mb-3">🛡️</div>
+        <h2 class="text-2xl font-black mb-1">GUARDIAN IA</h2>
+        <div class="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-sm font-bold inline-block mb-4">Solo $1/mes = S/4</div>
+        <div class="text-left text-sm space-y-2 mb-5 bg-slate-900 p-4 rounded-2xl">
+          <div class="flex items-center gap-2"><span class="text-green-400">✅</span> Análisis ILIMITADOS</div>
+          <div class="flex items-center gap-2"><span class="text-green-400">✅</span> Alertas 99% precisión</div>
+          <div class="flex items-center gap-2"><span class="text-green-400">✅</span> Detector estafas SMS/WSP</div>
+          <div class="flex items-center gap-2"><span class="text-green-400">✅</span> Radar casas cambio PRO</div>
+          <div class="flex items-center gap-2"><span class="text-green-400">✅</span> Historial completo</div>
+          <div class="flex items-center gap-2"><span class="text-green-400">✅</span> Soporte WhatsApp 24/7</div>
+        </div>
+        <button onclick="window.open('https://wa.me/51999999999?text=Quiero%20GUARDIAN%20IA%20$1')"
+          class="w-full bg-gradient-to-r from-green-500 to-green-600 py-4 rounded-2xl font-black text-lg btn-3d mb-2">
+          ACTIVAR AHORA - $1
+        </button>
+        <button onclick="this.closest('.fixed').remove()"
+          class="text-xs text-slate-400">Volver mañana por 3 gratis más</button>
+      </div>
+    </div>
+  `;
   document.body.appendChild(modal);
 }
-init();
+
+// ===== ACTIVAR GUARDIAN =====
+window.activarGuardian = function(codigo){
+  if(codigo === 'OXI2026'){
+    localStorage.setItem('oxibot_guardian','true');
+    alert('🛡️ GUARDIAN IA ACTIVADO\n\nBienvenido al Modo Bestia\nAnálisis ilimitados desbloqueados');
+    location.reload();
+  } else {
+    alert('Código incorrecto');
+  }
+}
+
+// ===== CARGAR MÓDULOS =====
+fetch('./config/modulos.json').then(r=>r.json()).then(d=>{
+  modulos=d;
+  renderTab('billete');
+  rotarNegocios();
+}).catch(()=>{
+  document.getElementById('app').innerHTML='<div class="text-center p-8 text-red-400">Error: config/modulos.json no encontrado</div>';
+});
+
+function renderTab(tab){
+  document.querySelectorAll('[id^=tab-]').forEach(b=>b.classList.remove('bg-green-600'));
+  document.getElementById(`tab-${tab}`)?.classList.add('bg-green-600');
+
+  if(tab==='tienda'){
+    const html = `<div class="space-y-3">
+      <div class="bg-slate-800 rounded-3xl p-4 mb-2">
+        <div class="text-center mb-3">
+          <div class="text-3xl mb-1">🛒</div>
+          <div class="font-bold">TIENDA MÓDULOS</div>
+          <div class="text-xs text-slate-400" id="contadorUsos">Usos hoy: ${esGuardian?'∞':(3-usosHoy)}</div>
+        </div>
+      </div>
+      ${Object.keys(modulos).map(k=>{
+        const m=modulos[k];const a=modulosActivos.includes(k);
+        const esGratis = m.precio===0;
+        return `<div class="bg-slate-800 rounded-3xl p-4">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="text-4xl">${m.icon}</div>
+            <div class="flex-1">
+              <div class="font-bold">${m.nombre} ${esGratis?'<span class="text-xs bg-green-600 px-2 py-0.5 rounded">GRATIS</span>':''}</div>
+              <div class="text-xs text-slate-400">${m.desc}</div>
+            </div>
+          </div>
+          ${a?`<button class="w-full bg-green-600 py-3 rounded-xl font-bold text-sm" disabled>✓ ACTIVO</button>`:
+          esGratis?`<button onclick="activarModulo('${k}')" class="w-full bg-blue-600 py-3 rounded-xl font-bold text-sm btn-3d">ACTIVAR GRATIS</button>`:
+          `<button onclick="mostrarModalGuardian()" class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black py-3 rounded-xl font-bold text-sm btn-3d">DESBLOQUEAR CON GUARDIAN $1</button>`}
+        </div>`
+      }).join('')}
+      <div class="bg-gradient-to-r from-green-600 to-blue-600 rounded-3xl p-5 text-center">
+        <div class="text-4xl mb-2">🛡️</div>
+        <div class="font-black text-xl mb-1">GUARDIAN IA</div>
+        <div class="text-sm mb-3">Todo ilimitado por $1/mes</div>
+        <button onclick="mostrarModalGuardian()" class="w-full bg-white text-black py-3 rounded-xl font-black btn-3d">VER BENEFICIOS</button>
+      </div>
+    </div>`;
+    document.getElementById('app').innerHTML=html;
+    return;
+  }
+
+  if(!modulosActivos.includes(tab)){
+    document.getElementById('app').innerHTML=`<div class="text-center p-8"><div class="text-5xl mb-4">🔒</div><div class="font-bold mb-4">Módulo bloqueado</div><button onclick="renderTab('tienda')" class="bg-green-600 px-6 py-3 rounded-xl font-bold btn-3d">IR A TIENDA</button></div>`;
+    return;
+  }
+
+  const m=modulos[tab];
+  document.getElementById('app').innerHTML=`<div class="card-enter">
+    ${modulosActivos.includes('billete') && tab==='billete'? `<div class="bg-slate-800 rounded-2xl p-3 mb-3 text-center text-xs"><span id="contadorUsos">Usos hoy: ${esGuardian?'∞':(3-usosHoy)}</span> ${!esGuardian?'<span class="text-yellow-400">| Guardian = Ilimitado</span>':''}</div>` : ''}
+    ${m.html}
+  </div>`;
+
+  if(m.js){
+    const s=document.createElement('script');
+    s.textContent=m.js;
+    document.body.appendChild(s);
+  }
+}
+
+window.activarModulo=function(k){
+  if(!modulosActivos.includes(k)){
+    modulosActivos.push(k);
+    localStorage.setItem('oxibot_modulos',JSON.stringify(modulosActivos));
+  }
+  renderTab(k);
+}
 </script>
 </body>
 </html>

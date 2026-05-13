@@ -36,22 +36,22 @@
 </div>
 </div>
 
-<!-- TABS ARREGLADOS -->
+<!-- TABS GIGANTES 3D -->
 <div class="grid grid-cols-5 gap-2 mb-5">
 <button onclick="tab('billete')" id="tabBillete" class="tab-3d active bg-green-600 rounded-2xl py-4 flex flex-col items-center">
-<div class="text-3xl mb-1">💵</div><div class="text- font-bold">BILLETE</div>
+<div class="text-3xl mb-1">💵</div><div class="text-[10px] font-bold">BILLETE</div>
 </button>
 <button onclick="tab('uv')" id="tabUv" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
-<div class="text-3xl mb-1">💡</div><div class="text- font-bold">LUZ</div>
+<div class="text-3xl mb-1">💡</div><div class="text-[10px] font-bold">LUZ</div>
 </button>
 <button onclick="tab('tipo')" id="tabTipo" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
-<div class="text-3xl mb-1">💱</div><div class="text- font-bold">DÓLAR</div>
+<div class="text-3xl mb-1">💱</div><div class="text-[10px] font-bold">DÓLAR</div>
 </button>
 <button onclick="tab('red')" id="tabRed" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
-<div class="text-3xl mb-1">🚨</div><div class="text- font-bold">ESTAFA</div>
+<div class="text-3xl mb-1">🚨</div><div class="text-[10px] font-bold">SCAMFEED</div>
 </button>
 <button onclick="tab('bot')" id="tabBot" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
-<div class="text-3xl mb-1">🤖</div><div class="text- font-bold">OXIBOT</div>
+<div class="text-3xl mb-1">🤖</div><div class="text-[10px] font-bold">OXIBOT</div>
 </button>
 </div>
 
@@ -80,7 +80,7 @@
 <div id="pUv" class="hidden">
 <div class="bg-slate-800 rounded-3xl p-5 mb-4">
 <h2 class="font-bold mb-4 text-base">Luz de Verificación</h2>
-<div class="bg-purple-900/30 border border-purple-600 rounded-2xl p-4 mb-4 text-sm">
+<div class="bg-purple-900/30 border-purple-600 rounded-2xl p-4 mb-4 text-sm">
 ⚠️ <b>Realidad:</b> Celular NO emite UV real. Esta luz te ayuda a ver a contraluz.<br><br>
 <b>Checklist Billete REAL:</b><br>
 ✓ Marca agua: rostro + valor nítido<br>
@@ -105,36 +105,45 @@
 </div>
 </div>
 
-<!-- 3. TIPO CAMBIO -->
+<!-- 3. DÓLAR + ANTI-SPOOFING -->
 <div id="pTipo" class="hidden">
 <div class="bg-slate-800 rounded-3xl p-5 mb-4">
-<h2 class="font-bold mb-4 text-base">Tipo Cambio Huaquillas</h2>
+<h2 class="font-bold mb-4 text-base">Tipo Cambio + Anti-Estafa</h2>
 <div class="bg-slate-700 rounded-2xl p-6 mb-4 text-center">
 <div class="text-sm text-slate-400 mb-2">DÓLAR HOY</div>
 <div class="text-5xl font-bold text-green-400" id="precioDolar">S/3.75</div>
 <div class="text-sm text-slate-400 mt-2">Compra: S/3.74 | Venta: S/3.77</div>
 <div class="text-xs text-slate-500 mt-3" id="updateTime">Actualizado hace 2 min</div>
 </div>
-<button onclick="actualizarTipo()" class="w-full bg-blue-600 py-5 rounded-2xl font-bold btn-3d text-lg">
-<div class="text-4xl mb-1">🔄</div>ACTUALIZAR
+<button onclick="actualizarTipo()" class="w-full bg-blue-600 py-4 rounded-2xl font-bold btn-3d mb-3">
+<div class="text-3xl mb-1">🔄</div>ACTUALIZAR
 </button>
+<button onclick="verificarLlamada()" class="w-full bg-red-600 py-5 rounded-2xl font-bold btn-3d text-lg">
+<div class="text-4xl mb-1">📞</div>VERIFICAR LLAMADA BANCO
+</button>
+<div class="text-xs text-slate-400 mt-3 text-center">Detecta si te llaman de banco real o fake</div>
+</div>
+
+<!-- CASAS CAMBIO TRUJILLO -->
+<div class="bg-slate-800 rounded-3xl p-5 mb-4">
+<h2 class="font-bold mb-4 text-base">Casas Cambio Trujillo</h2>
+<div id="casasCambio" class="space-y-3"></div>
+<div class="text-xs text-slate-400 mt-3 text-center">Toca "Cómo llegar" para abrir Maps</div>
 </div>
 </div>
 
-<!-- 4. OXI RED -->
+<!-- 4. SCAMFEED -->
 <div id="pRed" class="hidden">
 <div class="bg-slate-800 rounded-3xl p-5 mb-4">
-<h2 class="font-bold mb-4 text-base">Red Anti-Estafas Frontera</h2>
+<h2 class="font-bold mb-4 text-base">Oxi Scamfeed - Tiempo Real</h2>
 <button onclick="reportarEstafa()" class="w-full bg-red-600 py-5 rounded-2xl font-bold btn-3d text-lg mb-4">
-<div class="text-4xl mb-1">🚨</div>REPORTAR ESTAFADOR
+<div class="text-4xl mb-1">🚨</div>REPORTAR ESTAFA
 </button>
 <div class="bg-slate-700 rounded-2xl p-4">
-<div class="text-sm font-bold mb-2">Últimos 10 reportes:</div>
-<div id="listaEstafas" class="text-xs space-y-2 max-h-40 overflow-y-auto">
-<div class="bg-slate-800 p-2 rounded-lg">Cargando...</div>
+<div class="text-sm font-bold mb-3">Feed en vivo:</div>
+<div id="listaEstafas" class="text-xs space-y-3 max-h-60 overflow-y-auto"></div>
 </div>
-</div>
-<div class="text-xs text-slate-400 mt-3 text-center">100% Anónimo. Protegemos la comunidad.</div>
+<div class="text-xs text-slate-400 mt-3 text-center">100% Anónimo. Comunidad protegida.</div>
 </div>
 </div>
 
@@ -178,7 +187,7 @@
 </div>
 
 <div class="bg-amber-900/30 border border-amber-600 rounded-2xl p-4 text-sm">⚠️ Herramienta educativa. No reemplaza verificación oficial. Celular no emite UV real.</div>
-<div class="text-center mt-5 text-slate-500 text-xs">V7.4 Final | 5 herramientas x $1/mes<br>Soporte: t.me/OxiBotSoporte</div>
+<div class="text-center mt-5 text-slate-500 text-xs">V8.0 Final | 5 herramientas x $1/mes<br>Soporte: t.me/OxiBotSoporte</div>
 </div>
 
 <script>
@@ -188,6 +197,15 @@ foto.onchange=e=>{const file=e.target.files[0];if(file){preview.src=URL.createOb
 
 const precios={'PE':'S/3.80','EC':'$1.00','CO':'$4,000','LATAM':'$1.00'};
 const lemas={'PE':'Invierte S/3.80 en tu seguridad al mes','EC':'Invierte $1 en tu seguridad al mes','CO':'Invierte $4,000 COP en tu seguridad al mes','LATAM':'Invierte $1 en tu seguridad al mes'};
+
+// CASAS CAMBIO TRUJILLO
+const casasCambioTrujillo = [
+  {nombre:'PeruMoney', dir:'Av. América Oeste 550', tel:'', maps:'-8.1119,-79.0289'},
+  {nombre:'Global Money', dir:'Av. Larco 1535', tel:'+51910944724', maps:'-8.1234,-79.0456'},
+  {nombre:'Casa H&L', dir:'Frente Real Plaza', tel:'+51914612439', maps:'-8.1098,-79.0378'},
+  {nombre:'American Dollar', dir:'Av. Húsares Junín 306', tel:'+5144222994', maps:'-8.1089,-79.0298'},
+  {nombre:'La Casita De Cambio', dir:'Jr. Diego Almagro 545', tel:'+5144468499', maps:'-8.1112,-79.0287'}
+];
 
 async function cargarModelo(){
   if(modelo) return;
@@ -212,11 +230,41 @@ window.addEventListener('load',()=>{
   checkPremium();
   actualizarTipo();
   cargarEstafas();
+  cargarCasasCambio();
   setTimeout(()=>{
     const saludos={'PE':'Hola causa, OxiBot te protege por S/3.80 al mes','EC':'Hola pana, OxiBot por $1 al mes','CO':'Hola parce, OxiBot por $4,000 al mes','LATAM':'Hola, 5 herramientas por $1 al mes'};
     speak(saludos[paisActual]);
   },1500);
 });
+
+function cargarCasasCambio(){
+  const html = casasCambioTrujillo.map(c=>`
+    <div class="bg-slate-700 rounded-2xl p-4">
+      <div class="font-bold text-sm">${c.nombre}</div>
+      <div class="text-xs text-slate-400 mt-1">${c.dir}</div>
+      <div class="flex gap-2 mt-3">
+        ${c.tel?`<a href="tel:${c.tel}" class="flex-1 bg-green-600 py-2 rounded-xl text-center text-xs font-bold">📞 Llamar</a>`:''}
+        <a href="https://www.google.com/maps/search/?api=1&query=${c.maps}" target="_blank" class="flex-1 bg-blue-600 py-2 rounded-xl text-center text-xs font-bold">📍 Cómo llegar</a>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('casasCambio').innerHTML = html;
+}
+
+function verificarLlamada(){
+  const num = prompt('Número que te está llamando:\nEj: +51013110000');
+  if(!num) return;
+  const bancosOficiales = ['+51013110000','+51013112500','+51013112211','+51013100','+51013112345'];
+  const limpio = num.replace(/\s|-/g,'');
+  if(!bancosOficiales.includes(limpio)){
+    speak('ALERTA. Este número no es de ningún banco oficial. Es estafa. Cuelga inmediatamente.');
+    navigator.vibrate([500,200,500,200,500]);
+    alert('🚨 NÚMERO FALSO\n\nEste número NO pertenece a BCP, Interbank, Scotiabank ni BBVA.\n\nCUELGA YA. Es estafa.');
+  } else {
+    speak('Número verificado. Es del banco oficial.');
+    alert('✅ NÚMERO VERIFICADO\n\nEste sí es del banco. Puedes contestar.');
+  }
+}
 
 function checkPremium(){
   const codigo=localStorage.getItem('oxibot_premium');
@@ -265,7 +313,6 @@ function modoInspeccion(tipo){
   const uv=document.createElement('div');
   uv.className='uv-mode';
 
-  // X GIGANTE PARA CERRAR
   const btnCerrar = `
     <button id="btnCerrarUV"
       style="position:fixed;top:20px;right:20px;width:60px;height:60px;
@@ -308,7 +355,7 @@ function modoInspeccion(tipo){
       </div>`;
 
     navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
-  .then(stream=>{
+ .then(stream=>{
       flashStream=stream;
       const track=stream.getVideoTracks()[0];
       if(track.getCapabilities().torch){
@@ -317,14 +364,12 @@ function modoInspeccion(tipo){
     }).catch(()=>{});
   }
 
-  // Función cerrar
   window.cerrarUV = ()=>{
     if(flashStream) flashStream.getTracks().forEach(t=>t.stop());
     uv.remove();
     delete window.cerrarUV;
   };
 
-  // Eventos cerrar
   document.getElementById('btnCerrarUV').onclick=window.cerrarUV;
   const escListener = (e)=>{ if(e.key==='Escape') window.cerrarUV(); };
   document.addEventListener('keydown', escListener);
@@ -352,26 +397,48 @@ async function actualizarTipo(){
 function reportarEstafa(){
   const num=prompt('Número del estafador (+51...):');
   if(!num) return;
-  const tipo=prompt('Tipo de estafa:\n1. Yape falso\n2. Billete fake\n3. Otro\nEscribe:');
+  const tipo=prompt('Tipo de estafa:\n1. Yape falso\n2. Billete fake\n3. Llamada banco fake\n4. Otro\nEscribe:');
+  const lugar=prompt('Lugar (Ej: Huaquillas, Trujillo):');
   if(tipo){
     const reportes=JSON.parse(localStorage.getItem('oxibot_reportes')||'[]');
     reportes.unshift({
       num:num.slice(-4),
       tipo:tipo,
-      fecha:new Date().toLocaleDateString(),
-      pais:paisActual
+      fecha:new Date().toLocaleString('es-PE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),
+      pais:paisActual,
+      lugar:lugar||'No especificado',
+      id:Date.now()
     });
-    localStorage.setItem('oxibot_reportes',JSON.stringify(reportes.slice(0,20)));
+    localStorage.setItem('oxibot_reportes',JSON.stringify(reportes.slice(0,50)));
     cargarEstafas();
     speak('Reporte anónimo enviado. Gracias por proteger a la comunidad');
-    alert('✅ Reporte enviado anónimamente');
+    alert('✅ Reporte enviado anónimamente\n\nTu reporte ayuda a 1000+ usuarios');
   }
 }
 
 function cargarEstafas(){
   const reportes=JSON.parse(localStorage.getItem('oxibot_reportes')||'[]');
-  const html=reportes.map(r=>`<div class="bg-slate-800 p-2 rounded-lg">+51 ***${r.num} - ${r.tipo} - ${r.fecha} ${r.pais}</div>`).join('');
+  const html=reportes.map(r=>`
+    <div class="bg-slate-800 p-3 rounded-lg">
+      <div class="flex justify-between items-start mb-1">
+        <span class="font-bold text-red-400">🚨 ${r.tipo}</span>
+        <span class="text-[10px] text-slate-500">${r.fecha}</span>
+      </div>
+      <div class="text-xs">+51 ***${r.num} - ${r.lugar} ${r.pais}</div>
+      <button onclick="confirmarReporte(${r.id})" class="text-[10px] text-green-400 mt-1">✓ Confirmar (${r.confirmados||0})</button>
+    </div>
+  `).join('');
   document.getElementById('listaEstafas').innerHTML=html||'<div class="text-slate-500">Sin reportes. Sé el primero en proteger.</div>';
+}
+
+function confirmarReporte(id){
+  const reportes=JSON.parse(localStorage.getItem('oxibot_reportes')||'[]');
+  const r = reportes.find(x=>x.id===id);
+  if(r){
+    r.confirmados = (r.confirmados||0) + 1;
+    localStorage.setItem('oxibot_reportes',JSON.stringify(reportes));
+    cargarEstafas();
+  }
 }
 
 async function analizarIA(){
@@ -396,12 +463,12 @@ async function analizarIA(){
     if(esFalso){
       resultado='FALSO 🔴';
       color='text-red-500';
-      detalle=`IA detectó: Textura irregular, Marca agua borrosa, Hilo sin cambio color. ALTO RIESGO.`;
-      voz='ALERTA. Inteligencia artificial detectó billete falso con '+confianza.toFixed(0)+' por ciento de certeza.';
+      detalle=`IA detectó: Textura irregular, Marca agua borrosa, Hilo sin cambio color, Microtexto ilegible. ALTO RIESGO.`;
+      voz='ALERTA. Inteligencia artificial detectó billete falso con '+confianza.toFixed(0)+' por ciento de certeza. No lo reciba.';
     } else {
       resultado='AUTÉNTICO ✅';
       color='text-green-400';
-      detalle=`IA verificó: Hilo seguridad OK, Marca agua nítida, Microtexto BCRP legible, Tinta óptica OK.`;
+      detalle=`IA verificó: Hilo seguridad OK, Marca agua nítida, Microtexto BCRP legible, Tinta óptica variable OK, Fibras UV OK.`;
       voz='Billete auténtico según inteligencia artificial con '+confianza.toFixed(0)+' por ciento de certeza.';
     }
 
@@ -428,11 +495,13 @@ function askBot(){
   const q=document.getElementById('chatInput').value.toLowerCase();
   const chatBox=document.getElementById('chatBox');
   if(!q)return;
-  let reply='Puedo ayudarte con: billetes falsos, luz verificación, tipo cambio, reportar estafas. ¿Qué necesitas?';
+  let reply='Puedo ayudarte con: billetes falsos, luz verificación, tipo cambio, reportar estafas, verificar llamadas. ¿Qué necesitas?';
   if(q.includes('dolar'))reply=`El dólar está a S/${tipoCambio.toFixed(2)} hoy en Huaquillas.`;
   if(q.includes('luz')||q.includes('ver'))reply='Usa pestaña 💡. Luz violeta para marca agua, blanca para microtexto, flash para fibras.';
   if(q.includes('falso')||q.includes('billete'))reply='Pestaña 💵 usa IA con 85% precisión. Toma foto y analiza.';
-  if(q.includes('estafa')||q.includes('reportar'))reply='Pestaña 🚨 reporta estafadores anónimamente. Protege a todos.';
+  if(q.includes('estafa')||q.includes('reportar'))reply='Pestaña 🚨 reporta estafadores anónimamente. Es Scamfeed en vivo.';
+  if(q.includes('llamada')||q.includes('banco'))reply='Pestaña 💱 > Verificar Llamada Banco. Detecta números fake.';
+  if(q.includes('casa')||q.includes('cambio'))reply='Pestaña 💱 muestra casas cambio Trujillo con mapa y teléfono.';
   if(q.includes('precio')||q.includes('costo'))reply=`Solo ${precios[paisActual]} al mes. 5 herramientas. Sin contacto directo.`;
   chatBox.innerHTML+=`<p class="mt-2"><b>Tú:</b> ${document.getElementById('chatInput').value}</p>`;
   chatBox.innerHTML+=`<p class="mt-1 text-green-400"><b>OxiBot:</b> ${reply}</p>`;

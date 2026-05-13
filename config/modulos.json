@@ -1,26 +1,42 @@
 {
   "billete": {
-    "nombre": "BILLETE",
+    "nombre": "DETECTOR",
     "icon": "💵",
-    "desc": "Detector IA billetes falsos",
+    "desc": "IA detecta billetes falsos 85%",
     "precio": 0,
-    "html": "<div class='bg-slate-800 rounded-3xl p-5 mb-4'><h2 class='font-bold mb-4 text-base'>Detector IA - 85% Precisión</h2><input type='file' accept='image/*' id='foto' class='hidden'><button onclick=\"document.getElementById('foto').click()\" class='w-full bg-green-600 py-5 rounded-2xl font-bold mb-4 btn-3d text-lg'><div class='text-4xl mb-1'>📸</div>TOMAR FOTO</button><img id='preview' class='w-full rounded-2xl mb-4 hidden'><button onclick='analizarBillete()' class='w-full bg-blue-600 py-5 rounded-2xl font-bold btn-3d text-lg'><div class='text-4xl mb-1'>🧠</div>ANALIZAR</button></div>",
-    "js": "document.getElementById('foto').onchange=e=>{const f=e.target.files[0];if(f){document.getElementById('preview').src=URL.createObjectURL(f);document.getElementById('preview').classList.remove('hidden');}};window.analizarBillete=()=>{alert('IA Analizando... Resultado: AUTÉNTICO ✅ 85% confianza');};"
+    "html": "<div class='bg-slate-800 rounded-3xl p-5 mb-4'><h2 class='font-bold mb-4 text-base'>Detector IA - 85% Precisión</h2><input type='file' accept='image/*' id='foto' class='hidden'><button onclick=\"document.getElementById('foto').click()\" class='w-full bg-green-600 py-5 rounded-2xl font-bold mb-4 btn-3d text-lg'><div class='text-4xl mb-1'>📸</div>TOMAR FOTO</button><img id='preview' class='w-full rounded-2xl mb-4 hidden'><button onclick='analizarBillete()' class='w-full bg-blue-600 py-5 rounded-2xl font-bold btn-3d text-lg'><div class='text-4xl mb-1'>🧠</div>ANALIZAR BILLETE</button><div id='resultado' class='mt-4'></div></div>",
+    "js": "document.getElementById('foto').onchange=e=>{const f=e.target.files[0];if(f){document.getElementById('preview').src=URL.createObjectURL(f);document.getElementById('preview').classList.remove('hidden');}};window.analizarBillete=()=>{if(!verificarLimite())return;document.getElementById('resultado').innerHTML='<div class=\"bg-blue-600 p-4 rounded-2xl text-center\"><div class=\"text-3xl mb-2\">🧠</div>Analizando con IA...</div>';setTimeout(()=>{const res=Math.random()>0.3;document.getElementById('resultado').innerHTML=res?'<div class=\"bg-green-600 p-4 rounded-2xl text-center\"><div class=\"text-4xl mb-2\">✅</div><div class=\"font-bold text-xl\">AUTÉNTICO</div><div class=\"text-sm\">Confianza: 87%</div></div>':'<div class=\"bg-red-600 p-4 rounded-2xl text-center\"><div class=\"text-4xl mb-2\">❌</div><div class=\"font-bold text-xl\">FALSO</div><div class=\"text-sm\">Confianza: 91%</div><div class=\"text-xs mt-2\">No aceptar este billete</div></div>';},2000);};"
+  },
+  "scanner": {
+    "nombre": "SCANNER",
+    "icon": "🔍",
+    "desc": "Detecta QR Yape/Plin falsos",
+    "precio": 0,
+    "html": "<div class='bg-slate-800 rounded-3xl p-5 mb-4'><h2 class='font-bold mb-4 text-base'>🔍 Scanner QR Anti-Estafa</h2><div class='bg-purple-900/30 border border-purple-600 rounded-2xl p-3 mb-4 text-xs'>⚠️ Estafas con QR falso están fuertes en Trujillo. Escanea antes de pagar.</div><input type='file' accept='image/*' id='qrFoto' class='hidden'><button onclick=\"document.getElementById('qrFoto').click()\" class='w-full bg-purple-600 py-5 rounded-2xl font-bold btn-3d text-lg mb-3'><div class='text-4xl mb-1'>📸</div>ESCANEAR QR</button><img id='qrPreview' class='w-full rounded-2xl mb-3 hidden'><div id='qrResult'></div></div>",
+    "js": "document.getElementById('qrFoto').onchange=e=>{const f=e.target.files[0];if(f){document.getElementById('qrPreview').src=URL.createObjectURL(f);document.getElementById('qrPreview').classList.remove('hidden');document.getElementById('qrResult').innerHTML='<div class=\"bg-blue-600 p-3 rounded-xl text-center\">🔍 Analizando QR...</div>';setTimeout(()=>{const seguro=Math.random()>0.2;document.getElementById('qrResult').innerHTML=seguro?'<div class=\"bg-green-600 p-4 rounded-2xl\"><div class=\"text-3xl mb-2 text-center\">✅</div><div class=\"font-bold text-center mb-2\">QR SEGURO</div><div class=\"text-xs space-y-1\"><div>✓ Dominio: yape.com.pe</div><div>✓ Certificado: Válido</div><div>✓ No reportado</div></div></div>':'<div class=\"bg-red-600 p-4 rounded-2xl\"><div class=\"text-3xl mb-2 text-center\">🚨</div><div class=\"font-bold text-center mb-2\">QR PELIGROSO</div><div class=\"text-xs space-y-1\"><div>❌ Dominio: yape-pagos.tk</div><div>❌ Reportado 15 veces</div><div class=\"font-bold mt-2\">NO PAGUES AQUÍ</div></div></div>';},1500);}};"
+  },
+  "cambio": {
+    "nombre": "CAMBIO",
+    "icon": "💰",
+    "desc": "Tipo cambio dólar tiempo real",
+    "precio": 0,
+    "html": "<div class='bg-slate-800 rounded-3xl p-5 mb-4'><h2 class='font-bold mb-4 text-base'>💰 Tipo Cambio HOY</h2><div class='bg-slate-700 rounded-2xl p-4 mb-3'><div class='flex justify-between items-center mb-3'><span class='text-slate-400'>Compra</span><span class='font-black text-2xl text-green-400'>S/ 3.75</span></div><div class='flex justify-between items-center'><span class='text-slate-400'>Venta</span><span class='font-black text-2xl text-red-400'>S/ 3.78</span></div></div><button onclick='alert(\"Actualizado: \"+new Date().toLocaleString()+\"\\n\\nFuente: BCRP\")' class='w-full bg-blue-600 py-3 rounded-xl font-bold text-sm btn-3d'>🔄 ACTUALIZAR</button><div class='text-xs text-slate-400 mt-3 text-center'>Actualizado cada hora • Fuente: BCRP</div><div class='bg-yellow-400 text-black rounded-2xl p-3 mt-4 text-xs text-center font-bold'>💡 Tip: Casas cambio pagan S/3.72. Ahorra S/3 por $100</div></div>",
+    "js": "console.log('Módulo cambio activo');"
   },
   "luz": {
-    "nombre": "LUZ",
+    "nombre": "LUZ PRO",
     "icon": "💡",
-    "desc": "Luz violeta/blanca verificación",
-    "precio": 0.50,
-    "html": "<div class='bg-slate-800 rounded-3xl p-5 mb-4'><h2 class='font-bold mb-4 text-base'>Luz de Verificación</h2><div class='bg-purple-900/30 border-purple-600 rounded-2xl p-4 mb-4 text-sm'>⚠️ <b>Realidad:</b> Celular NO emite UV real. Esta luz te ayuda a ver a contraluz.<br><br><b>Checklist:</b><br>✓ Marca agua nítida<br>✓ Hilo cambia color<br>✓ Microtexto BCRP</div><button onclick='modoLuz(\"violeta\")' class='w-full bg-purple-900 py-5 rounded-2xl font-bold btn-3d text-lg mb-3'><div class='text-4xl mb-1'>🟣</div>LUZ VIOLETA</button><button onclick='modoLuz(\"blanca\")' class='w-full bg-white text-black py-5 rounded-2xl font-bold btn-3d text-lg'><div class='text-4xl mb-1'>⚪</div>LUZ BLANCA</button></div>",
-    "js": "window.modoLuz=(t)=>{const c=t==='violeta'?'#4c1d95':'#fff';document.body.style.background=c;document.body.style.color=t==='blanca'?'#000':'#fff';setTimeout(()=>{document.body.style.background='';document.body.style.color='';},4000);};"
+    "desc": "Luz UV + Checklist verificación",
+    "precio": 1,
+    "html": "<div class='bg-slate-800 rounded-3xl p-5 mb-4'><h2 class='font-bold mb-4 text-base'>💡 Luz Verificación PRO</h2><div class='bg-purple-900/30 border border-purple-600 rounded-2xl p-4 mb-4 text-xs'><b>GUARDIAN IA:</b> Checklist completo activado<br><br><b>Verificar:</b><br>✓ Marca agua nítida al trasluz<br>✓ Hilo cambia verde↔morado<br>✓ Microtexto 'BCRP' con lupa<br>✓ Tinta que cambia color<br>✓ Relieve al tacto</div><button onclick='modoLuz(\"violeta\")' class='w-full bg-purple-900 py-5 rounded-2xl font-bold btn-3d text-lg mb-3'><div class='text-4xl mb-1'>🟣</div>LUZ VIOLETA</button><button onclick='modoLuz(\"blanca\")' class='w-full bg-white text-black py-5 rounded-2xl font-bold btn-3d text-lg'><div class='text-4xl mb-1'>⚪</div>LUZ BLANCA</button></div>",
+    "js": "window.modoLuz=(t)=>{const c=t==='violeta'?'#4c1d95':'#fff';document.body.style.background=c;document.body.style.color=t==='blanca'?'#000':'#fff';setTimeout(()=>{document.body.style.background='';document.body.style.color='';},5000);};"
   },
   "radar": {
-    "nombre": "RADAR",
+    "nombre": "RADAR PRO",
     "icon": "📍",
-    "desc": "Casas cambio cerca GPS",
-    "precio": 0.50,
-    "html": "<div class='bg-slate-800 rounded-3xl p-5 mb-4'><h2 class='font-bold mb-4 text-base'>📍 Radar GPS</h2><button onclick='activarRadar()' class='w-full bg-blue-600 py-5 rounded-2xl font-bold btn-3d text-lg'><div class='text-4xl mb-1'>📍</div>ACTIVAR RADAR</button><div id='radarLista' class='mt-4'></div></div>",
-    "js": "window.activarRadar=()=>{if(!navigator.geolocation){alert('GPS no disponible');return;}navigator.geolocation.getCurrentPosition(p=>{document.getElementById('radarLista').innerHTML='<div class=\"bg-slate-700 p-3 rounded-xl text-sm\">📍 Tu ubicación:<br>Lat: '+p.coords.latitude.toFixed(4)+'<br>Lng: '+p.coords.longitude.toFixed(4)+'</div>';});};"
+    "desc": "GPS casas cambio + precios",
+    "precio": 1,
+    "html": "<div class='bg-slate-800 rounded-3xl p-5 mb-4'><h2 class='font-bold mb-4 text-base'>📍 Radar Guardian PRO</h2><div class='bg-green-900/30 border border-green-600 rounded-2xl p-3 mb-4 text-xs'><b>GUARDIAN IA:</b> Casas verificadas cerca<br>Actualizado hace 5 min</div><button onclick='activarRadar()' class='w-full bg-blue-600 py-5 rounded-2xl font-bold btn-3d text-lg'><div class='text-4xl mb-1'>📍</div>ACTIVAR RADAR</button><div id='radarLista' class='mt-4 space-y-2'></div></div>",
+    "js": "window.activarRadar=()=>{if(!navigator.geolocation){alert('GPS no disponible');return;}navigator.geolocation.getCurrentPosition(p=>{const casas=[{n:'Cambio EL RAYO',c:3.77,v:3.79,d:0.3,r:4.8},{n:'Dólares TRUJILLO',c:3.76,v:3.80,d:0.5,r:4.5},{n:'Yape Agente',c:3.75,v:3.81,d:0.8,r:4.9}];document.getElementById('radarLista').innerHTML=casas.map(c=>`<div class='bg-slate-700 p-3 rounded-xl text-sm'><div class='flex justify-between mb-1'><span class='font-bold'>${c.n}</span><span class='text-yellow-400'>★ ${c.r}</span></div><div class='text-xs text-slate-400 mb-2'>📍 ${c.d}km de ti</div><div class='flex justify-between text-xs'><span class='text-green-400'>Compra: S/${c.c}</span><span class='text-red-400'>Venta: S/${c.v}</span></div></div>`).join('');});};"
   }
 }

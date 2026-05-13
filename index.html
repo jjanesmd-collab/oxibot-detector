@@ -47,11 +47,14 @@
 </div>
 <div id="pBot" class="hidden">
 <div class="bg-slate-800 rounded-2xl p-4 mb-4">
-<h2 class="font-bold mb-3 text-sm">3. Pregúntale a OxiBot</h2>
+<h2 class="font-bold mb-3 text-sm">3. Háblale a OxiBot</h2>
 <div id="chatBox" class="bg-slate-700 rounded-xl p-3 mb-3 h-48 overflow-y-auto text-sm">
-<p class="text-slate-400">OxiBot: Habla causa ¿En qué te ayudo? Pregunta sobre sellos, UV, estafas...</p>
+<p class="text-slate-400">OxiBot: Habla causa ¿En qué te ayudo?</p>
 </div>
-<input id="chatInput" placeholder="Ej: ¿Cómo veo si el sello es falso?" class="w-full bg-slate-700 p-3 rounded-xl mb-3 text-sm">
+<div class="flex gap-2 mb-3">
+<input id="chatInput" placeholder="Escribe o habla..." class="flex-1 bg-slate-700 p-3 rounded-xl text-sm">
+<button onclick="startVoice()" id="btnMic" class="bg-red-600 px-4 rounded-xl font-bold">🎤</button>
+</div>
 <button onclick="askBot()" class="w-full bg-purple-600 py-3 rounded-xl font-bold">💬 PREGUNTAR A OXIBOT</button>
 </div>
 </div>
@@ -62,12 +65,19 @@
 <button onclick="location.reload()" class="w-full bg-slate-700 py-2 rounded-xl mt-4">Chequear otro</button>
 </div>
 <div class="bg-amber-900/30 border border-amber-600 rounded-xl p-3 text-xs">⚠️ Herramienta educativa. No reemplaza peritaje BCR. Si dudas, consulta casa de cambio.</div>
-<div class="text-center mt-4 text-slate-500 text-xs">V3.0 | Detector + Voz + Bot IA<br>WhatsApp: 930894004</div>
+<div class="text-center mt-4 text-slate-500 text-xs">V4.0 | Detector + Voz Bidireccional<br>WhatsApp: 930894004</div>
 </div>
 <script>
 let mute = false;
+let recognition;
 const foto=document.getElementById('foto');const preview=document.getElementById('preview');
 foto.onchange=e=>{const file=e.target.files[0];if(file){preview.src=URL.createObjectURL(file);preview.classList.remove('hidden');}};
+
+window.addEventListener('load', () => {
+setTimeout(() => {
+speak('Habla causa, soy OxiBot. Te ayudo a detectar billetes falsos y estafas. ¿Qué necesitas hoy?');
+}, 1000);
+});
 
 function toggleMute(){
 mute = !mute;
@@ -83,6 +93,33 @@ msg.lang = 'es-PE';
 msg.rate = 1.1;
 msg.pitch = 1;
 window.speechSynthesis.speak(msg);
+}
+
+function startVoice(){
+if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+alert('Tu navegador no soporta voz bro. Usa Chrome en Android');
+return;
+}
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+recognition = new SpeechRecognition();
+recognition.lang = 'es-PE';
+recognition.continuous = false;
+document.getElementById('btnMic').innerText = '🔴';
+document.getElementById('btnMic').classList.add('animate-pulse');
+recognition.onresult = (event) => {
+const texto = event.results[0][0].transcript;
+document.getElementById('chatInput').value = texto;
+askBot();
+};
+recognition.onerror = () => {
+document.getElementById('btnMic').innerText = '🎤';
+document.getElementById('btnMic').classList.remove('animate-pulse');
+};
+recognition.onend = () => {
+document.getElementById('btnMic').innerText = '🎤';
+document.getElementById('btnMic').classList.remove('animate-pulse');
+};
+recognition.start();
 }
 
 function tab(t){
@@ -146,9 +183,10 @@ function askBot(){
 const q = document.getElementById('chatInput').value.toLowerCase();
 const chatBox = document.getElementById('chatBox');
 if(!q) return;
-
 let reply = '';
-if(q.includes('sello') || q.includes('marca') || q.includes('agua')){
+if(q.includes('hola') || q.includes('qué tal') || q.includes('habla')){
+reply = 'Habla causa, todo piola. ¿Qué billete quieres chequear hoy o tienes duda de alguna estafa?';
+}else if(q.includes('sello') || q.includes('marca') || q.includes('agua')){
 reply = 'El sello de agua se ve a contraluz, bro. Si no ves los peces o la cara del Inca clarito, es falso al toque. Usa luz de tu cel.';
 }else if(q.includes('uv') || q.includes('luz') || q.includes('morada')){
 reply = 'Con luz UV los billetes reales brillan fibras de colores y franjas. Si no brilla nada, te metieron cabeza. Cuesta 15 soles la linterna.';
@@ -161,7 +199,6 @@ reply = 'OxiBot es gratis pa 3 chequeos al día bro. Ilimitado cuesta 20 soles a
 }else{
 reply = 'Pregúntame sobre: sellos de agua, luz UV, estafas de Yape, tamaño de billetes. Yo te ayudo a no perder plata en la frontera.';
 }
-
 chatBox.innerHTML += `<p class="mt-2"><b>Tú:</b> ${document.getElementById('chatInput').value}</p>`;
 chatBox.innerHTML += `<p class="mt-1 text-green-400"><b>OxiBot:</b> ${reply}</p>`;
 chatBox.scrollTop = chatBox.scrollHeight;

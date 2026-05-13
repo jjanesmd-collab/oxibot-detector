@@ -7,16 +7,41 @@
 <meta name="theme-color" content="#16a34a">
 <link rel="manifest" href="data:application/json,{'name':'OxiBot Seguridad','short_name':'OxiBot','start_url':'.','display':'standalone','background_color':'#0f172a','theme_color':'#16a34a','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/2910/2910768.png','sizes':'512x512'}]}">
 <script src="https://cdn.tailwindcss.com"></script>
+<style>
+.btn-3d {
+  box-shadow: 0 8px 0 #0f5132, 0 15px 20px rgba(0,0,0,0.4);
+  transform: translateY(0);
+  transition: all 0.1s;
+}
+.btn-3d:active {
+  box-shadow: 0 2px 0 #0f5132, 0 5px 10px rgba(0,0,0,0.4);
+  transform: translateY(6px);
+}
+.tab-3d {
+  box-shadow: 0 4px 0 #1e293b, 0 8px 15px rgba(0,0,0,0.3);
+  transform: translateY(0);
+  transition: all 0.1s;
+}
+.tab-3d:active {
+  box-shadow: 0 1px 0 #1e293b;
+  transform: translateY(3px);
+}
+.tab-3d.active {
+  box-shadow: 0 2px 0 #15803d, 0 6px 12px rgba(22,163,74,0.4);
+  transform: translateY(2px);
+  background: linear-gradient(145deg, #16a34a, #15803d);
+}
+</style>
 </head>
 <body class="bg-slate-900 text-white min-h-screen">
 <div class="max-w-md mx-auto p-4">
 <div class="text-center mb-4 pt-6">
-<img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" class="w-12 mx-auto mb-2">
-<h1 class="text-xl font-bold">OxiBot</h1>
+<img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" class="w-16 mx-auto mb-2">
+<h1 class="text-2xl font-bold">OxiBot</h1>
 <p class="text-green-400 text-sm font-bold" id="lema">Invierte $1 en tu seguridad al mes</p>
-<div class="flex gap-2 justify-center mt-2">
-<button onclick="toggleMute()" id="btnMute" class="text-xs bg-slate-700 px-3 py-1 rounded-full">🔊 Voz</button>
-<select id="pais" onchange="cambiarPais()" class="text-xs bg-slate-700 px-2 py-1 rounded-full">
+<div class="flex gap-2 justify-center mt-3">
+<button onclick="toggleMute()" id="btnMute" class="text-xs bg-slate-700 px-4 py-2 rounded-full btn-3d">🔊 Voz Activa</button>
+<select id="pais" onchange="cambiarPais()" class="text-xs bg-slate-700 px-3 py-2 rounded-full btn-3d">
 <option value="LATAM">🌎 LATAM</option>
 <option value="PE">🇵🇪 Perú</option>
 <option value="EC">🇪🇨 Ecuador</option>
@@ -25,118 +50,153 @@
 </div>
 </div>
 
-<!-- TABS 5 HERRAMIENTAS -->
-<div class="grid grid-cols-5 bg-slate-800 rounded-xl p-1 mb-4 text-xs">
-<button onclick="tab('billete')" id="tabBillete" class="py-2 rounded-lg bg-green-600 font-bold">💵</button>
-<button onclick="tab('tipo')" id="tabTipo" class="py-2 rounded-lg font-bold">💱</button>
-<button onclick="tab('frontera')" id="tabFrontera" class="py-2 rounded-lg font-bold">🚧</button>
-<button onclick="tab('calcula')" id="tabCalcula" class="py-2 rounded-lg font-bold">🧮</button>
-<button onclick="tab('bot')" id="tabBot" class="py-2 rounded-lg font-bold">🤖</button>
+<!-- TABS GIGANTES 3D -->
+<div class="grid grid-cols-5 gap-2 mb-5">
+<button onclick="tab('billete')" id="tabBillete" class="tab-3d active bg-green-600 rounded-2xl py-4 flex flex-col items-center">
+<div class="text-3xl mb-1">💵</div>
+<div class="text-[10px] font-bold">BILLETE</div>
+</button>
+<button onclick="tab('tipo')" id="tabTipo" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
+<div class="text-3xl mb-1">💱</div>
+<div class="text-[10px] font-bold">DÓLAR</div>
+</button>
+<button onclick="tab('frontera')" id="tabFrontera" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
+<div class="text-3xl mb-1">🚧</div>
+<div class="text-[10px] font-bold">PUENTE</div>
+</button>
+<button onclick="tab('calcula')" id="tabCalcula" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
+<div class="text-3xl mb-1">🧮</div>
+<div class="text-[10px] font-bold">CALCULA</div>
+</button>
+<button onclick="tab('bot')" id="tabBot" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
+<div class="text-3xl mb-1">🤖</div>
+<div class="text-[10px] font-bold">OXIBOT</div>
+</button>
 </div>
 
 <!-- 1. DETECTOR BILLETES -->
 <div id="pBillete">
-<div class="bg-slate-800 rounded-2xl p-4 mb-4">
-<h2 class="font-bold mb-3 text-sm">Detector Billetes Falsos</h2>
+<div class="bg-slate-800 rounded-3xl p-5 mb-4">
+<h2 class="font-bold mb-4 text-base">Detector Billetes Falsos</h2>
 <input type="file" accept="image/*" capture="environment" id="foto" class="hidden">
-<button onclick="document.getElementById('foto').click()" class="w-full bg-green-600 py-3 rounded-xl font-bold mb-3">📸 TOMAR FOTO</button>
-<img id="preview" class="w-full rounded-xl mb-3 hidden">
-<select id="tipo" class="w-full bg-slate-700 p-3 rounded-xl mb-3 text-sm">
-<option value="">Selecciona billete</option>
-<option value="S/10">S/10</option><option value="S/20">S/20</option><option value="S/50">S/50</option>
-<option value="S/100">S/100</option><option value="USD20">$20</option><option value="USD100">$100</option>
+<button onclick="document.getElementById('foto').click()" class="w-full bg-green-600 py-5 rounded-2xl font-bold mb-4 btn-3d text-lg">
+<div class="text-4xl mb-1">📸</div>
+TOMAR FOTO
+</button>
+<img id="preview" class="w-full rounded-2xl mb-4 hidden">
+<select id="tipo" class="w-full bg-slate-700 p-4 rounded-2xl mb-4 text-base">
+<option value="">¿Qué billete es?</option>
+<option value="S/10">S/10 Soles</option><option value="S/20">S/20 Soles</option><option value="S/50">S/50 Soles</option>
+<option value="S/100">S/100 Soles</option><option value="USD20">$20 Dólares</option><option value="USD100">$100 Dólares</option>
 </select>
-<button onclick="analizarBillete()" class="w-full bg-blue-600 py-3 rounded-xl font-bold">🔍 ANALIZAR</button>
+<button onclick="analizarBillete()" class="w-full bg-blue-600 py-5 rounded-2xl font-bold btn-3d text-lg">
+<div class="text-4xl mb-1">🔍</div>
+ANALIZAR AHORA
+</button>
 </div>
 </div>
 
 <!-- 2. TIPO CAMBIO LIVE -->
 <div id="pTipo" class="hidden">
-<div class="bg-slate-800 rounded-2xl p-4 mb-4">
-<h2 class="font-bold mb-3 text-sm">Tipo Cambio Huaquillas</h2>
-<div class="bg-slate-700 rounded-xl p-4 mb-3 text-center">
-<div class="text-xs text-slate-400">DÓLAR HOY</div>
-<div class="text-3xl font-bold text-green-400" id="precioDolar">S/3.75</div>
-<div class="text-xs text-slate-400 mt-1">Compra: S/3.74 | Venta: S/3.77</div>
-<div class="text-xs text-slate-500 mt-2" id="updateTime">Actualizado hace 2 min</div>
+<div class="bg-slate-800 rounded-3xl p-5 mb-4">
+<h2 class="font-bold mb-4 text-base">Tipo Cambio Huaquillas</h2>
+<div class="bg-slate-700 rounded-2xl p-6 mb-4 text-center">
+<div class="text-sm text-slate-400 mb-2">DÓLAR HOY</div>
+<div class="text-5xl font-bold text-green-400" id="precioDolar">S/3.75</div>
+<div class="text-sm text-slate-400 mt-2">Compra: S/3.74 | Venta: S/3.77</div>
+<div class="text-xs text-slate-500 mt-3" id="updateTime">Actualizado hace 2 min</div>
 </div>
-<button onclick="actualizarTipo()" class="w-full bg-blue-600 py-3 rounded-xl font-bold">🔄 ACTUALIZAR PRECIO</button>
-<div class="text-xs text-slate-400 mt-3 text-center">Fuente: Casas Huaquillas</div>
+<button onclick="actualizarTipo()" class="w-full bg-blue-600 py-5 rounded-2xl font-bold btn-3d text-lg">
+<div class="text-4xl mb-1">🔄</div>
+ACTUALIZAR PRECIO
+</button>
+<div class="text-xs text-slate-400 mt-4 text-center">Fuente: Casas de Cambio Huaquillas</div>
 </div>
 </div>
 
 <!-- 3. ESTADO FRONTERA -->
 <div id="pFrontera" class="hidden">
-<div class="bg-slate-800 rounded-2xl p-4 mb-4">
-<h2 class="font-bold mb-3 text-sm">Estado Puentes Tiempo Real</h2>
-<div class="bg-slate-700 rounded-xl p-3 mb-2">
+<div class="bg-slate-800 rounded-3xl p-5 mb-4">
+<h2 class="font-bold mb-4 text-base">Estado Puentes Tiempo Real</h2>
+<div class="bg-slate-700 rounded-2xl p-4 mb-3">
 <div class="flex justify-between items-center">
-<div><div class="font-bold text-sm">🇪🇨 Huaquillas</div><div class="text-xs text-green-400" id="estadoEC">ABIERTO - Cola 10 min</div></div>
-<button onclick="reportar('EC')" class="bg-slate-600 px-3 py-1 rounded-lg text-xs">Reportar</button>
+<div><div class="font-bold text-lg">🇪🇨 Huaquillas</div><div class="text-sm text-green-400" id="estadoEC">ABIERTO - Cola 10 min</div></div>
+<button onclick="reportar('EC')" class="bg-slate-600 px-4 py-3 rounded-xl text-sm btn-3d">Reportar</button>
 </div>
 </div>
-<div class="bg-slate-700 rounded-xl p-3 mb-3">
+<div class="bg-slate-700 rounded-2xl p-4 mb-4">
 <div class="flex justify-between items-center">
-<div><div class="font-bold text-sm">🇵🇪 Aguas Verdes</div><div class="text-xs text-yellow-400" id="estadoPE">LENTO - Operativo SUNAT</div></div>
-<button onclick="reportar('PE')" class="bg-slate-600 px-3 py-1 rounded-lg text-xs">Reportar</button>
+<div><div class="font-bold text-lg">🇵🇪 Aguas Verdes</div><div class="text-sm text-yellow-400" id="estadoPE">LENTO - Operativo</div></div>
+<button onclick="reportar('PE')" class="bg-slate-600 px-4 py-3 rounded-xl text-sm btn-3d">Reportar</button>
 </div>
 </div>
-<div class="text-xs text-slate-400 text-center">Último reporte: <span id="lastReport">Hace 5 min</span></div>
+<div class="text-sm text-slate-400 text-center">Último reporte: <span id="lastReport">Hace 5 min</span></div>
 </div>
 </div>
 
 <!-- 4. CALCULADORA CON VOZ -->
 <div id="pCalcula" class="hidden">
-<div class="bg-slate-800 rounded-2xl p-4 mb-4">
-<h2 class="font-bold mb-3 text-sm">Calculadora Frontera</h2>
-<input type="number" id="montoCalc" placeholder="Monto" class="w-full bg-slate-700 p-3 rounded-xl mb-3 text-sm">
-<div class="grid grid-cols-2 gap-2 mb-3">
-<button onclick="calc('USD2PEN')" class="bg-green-600 py-3 rounded-xl font-bold text-sm">Dólar → Sol</button>
-<button onclick="calc('PEN2USD')" class="bg-blue-600 py-3 rounded-xl font-bold text-sm">Sol → Dólar</button>
+<div class="bg-slate-800 rounded-3xl p-5 mb-4">
+<h2 class="font-bold mb-4 text-base">Calculadora Frontera</h2>
+<input type="number" id="montoCalc" placeholder="Escribe el monto" class="w-full bg-slate-700 p-5 rounded-2xl mb-4 text-lg text-center">
+<div class="grid grid-cols-2 gap-3 mb-4">
+<button onclick="calc('USD2PEN')" class="bg-green-600 py-5 rounded-2xl font-bold btn-3d">
+<div class="text-3xl mb-1">💵→</div>
+<div class="text-sm">Dólar a Sol</div>
+</button>
+<button onclick="calc('PEN2USD')" class="bg-blue-600 py-5 rounded-2xl font-bold btn-3d">
+<div class="text-3xl mb-1">→💵</div>
+<div class="text-sm">Sol a Dólar</div>
+</button>
 </div>
-<div class="bg-slate-700 rounded-xl p-4 text-center">
-<div class="text-xs text-slate-400">RESULTADO</div>
-<div class="text-2xl font-bold text-green-400" id="resultadoCalc">S/0.00</div>
+<div class="bg-slate-700 rounded-2xl p-6 text-center">
+<div class="text-sm text-slate-400 mb-2">RESULTADO</div>
+<div class="text-4xl font-bold text-green-400" id="resultadoCalc">S/0.00</div>
 </div>
 </div>
 </div>
 
 <!-- 5. BOT -->
 <div id="pBot" class="hidden">
-<div class="bg-slate-800 rounded-2xl p-4 mb-4">
-<h2 class="font-bold mb-3 text-sm">Asistente OxiBot</h2>
-<div id="chatBox" class="bg-slate-700 rounded-xl p-3 mb-3 h-40 overflow-y-auto text-sm">
+<div class="bg-slate-800 rounded-3xl p-5 mb-4">
+<h2 class="font-bold mb-4 text-base">Asistente OxiBot</h2>
+<div id="chatBox" class="bg-slate-700 rounded-2xl p-4 mb-4 h-48 overflow-y-auto text-sm">
 <p class="text-slate-400">OxiBot: ¿En qué te ayudo?</p>
 </div>
-<div class="flex gap-2 mb-3">
-<input id="chatInput" placeholder="Escribe o habla..." class="flex-1 bg-slate-700 p-3 rounded-xl text-sm">
-<button onclick="startVoice()" id="btnMic" class="bg-red-600 px-4 rounded-xl font-bold">🎤</button>
+<div class="flex gap-3 mb-4">
+<input id="chatInput" placeholder="Escribe o habla..." class="flex-1 bg-slate-700 p-4 rounded-2xl text-base">
+<button onclick="startVoice()" id="btnMic" class="bg-red-600 px-6 rounded-2xl font-bold btn-3d">
+<div class="text-3xl">🎤</div>
+</button>
 </div>
-<button onclick="askBot()" class="w-full bg-purple-600 py-3 rounded-xl font-bold">CONSULTAR</button>
+<button onclick="askBot()" class="w-full bg-purple-600 py-5 rounded-2xl font-bold btn-3d text-lg">
+<div class="text-4xl mb-1">💬</div>
+CONSULTAR
+</button>
 </div>
 </div>
 
 <!-- RESULTADO -->
-<div id="resultado" class="hidden bg-slate-800 rounded-2xl p-4 mb-4">
-<h3 class="font-bold text-lg mb-2">Resultado:</h3>
-<div id="textoResult" class="text-2xl font-bold mb-3"></div>
-<div id="detalle" class="text-sm text-slate-300"></div>
-<button onclick="location.reload()" class="w-full bg-slate-700 py-2 rounded-xl mt-4">Nueva verificación</button>
+<div id="resultado" class="hidden bg-slate-800 rounded-3xl p-5 mb-4">
+<h3 class="font-bold text-xl mb-3">Resultado:</h3>
+<div id="textoResult" class="text-3xl font-bold mb-4"></div>
+<div id="detalle" class="text-base text-slate-300"></div>
+<button onclick="location.reload()" class="w-full bg-slate-700 py-4 rounded-2xl mt-5 btn-3d">Nueva verificación</button>
 </div>
 
 <!-- PAYWALL $1 -->
-<div id="paywall" class="hidden bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-4 mb-4">
+<div id="paywall" class="hidden bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl p-5 mb-4">
 <div class="text-center">
-<div class="text-lg font-bold mb-1">🔓 Desbloquea Todo x <span id="precioPlan">$1/mes</span></div>
-<div class="text-xs mb-3" id="textoPlan">Ilimitado: Billetes + Tipo Cambio + Frontera + Voz</div>
-<button onclick="activarPremium()" class="w-full bg-white text-green-600 py-3 rounded-xl font-bold mb-2">🔑 TENGO CÓDIGO</button>
-<button onclick="pagar()" class="w-full bg-yellow-400 text-black py-3 rounded-xl font-bold">💳 PAGAR <span id="precioBtn">$1</span></button>
-<div class="text-xs mt-2 opacity-80">Yape: 930894004</div>
+<div class="text-xl font-bold mb-2">🔓 Desbloquea Todo x <span id="precioPlan">$1/mes</span></div>
+<div class="text-sm mb-4" id="textoPlan">Ilimitado: 5 herramientas + Voz + Sin anuncios</div>
+<button onclick="activarPremium()" class="w-full bg-white text-green-600 py-4 rounded-2xl font-bold mb-3 btn-3d text-lg">🔑 TENGO CÓDIGO</button>
+<button onclick="pagar()" class="w-full bg-yellow-400 text-black py-4 rounded-2xl font-bold btn-3d text-lg">💳 PAGAR <span id="precioBtn">$1</span></button>
+<div class="text-sm mt-3 opacity-90">Yape: 930894004</div>
 </div>
 </div>
 
-<div class="bg-amber-900/30 border border-amber-600 rounded-xl p-3 text-xs">⚠️ Herramienta educativa. No reemplaza verificación oficial.</div>
-<div class="text-center mt-4 text-slate-500 text-xs">V6.0 | 5 herramientas x $1/mes<br>WhatsApp: +51 930894004</div>
+<div class="bg-amber-900/30 border border-amber-600 rounded-2xl p-4 text-sm">⚠️ Herramienta educativa. No reemplaza verificación oficial.</div>
+<div class="text-center mt-5 text-slate-500 text-xs">V6.1 | 5 herramientas x $1/mes<br>WhatsApp: +51 930894004</div>
 </div>
 
 <script>
@@ -157,7 +217,6 @@ function cambiarPais(){
   document.getElementById('lema').innerText = lemas[paisActual];
   document.getElementById('precioPlan').innerText = precios[paisActual] + '/mes';
   document.getElementById('precioBtn').innerText = precios[paisActual];
-  document.getElementById('textoPlan').innerText = `Ilimitado: Billetes + Tipo Cambio + Frontera + Voz`;
 }
 
 window.addEventListener('load', () => {
@@ -165,7 +224,7 @@ window.addEventListener('load', () => {
   actualizarTipo();
   setTimeout(() => {
     const saludos = {
-      'PE': 'Hola causa, soy OxiBot. Por S/3.80 al mes te protejo de billetes falsos y estafas',
+      'PE': 'Hola causa, soy OxiBot. Por S/3.80 al mes te protejo de estafas',
       'EC': 'Hola pana, soy OxiBot. Por $1 al mes te cuido en la frontera',
       'CO': 'Hola parce, soy OxiBot. Por $4,000 al mes te protejo',
       'LATAM': 'Hola, soy OxiBot. Por $1 al mes tienes 5 herramientas de seguridad'
@@ -187,7 +246,7 @@ function checkPremium(){
 
 function toggleMute(){
   mute =!mute;
-  document.getElementById('btnMute').innerText = mute? '🔇' : '🔊 Voz';
+  document.getElementById('btnMute').innerText = mute? '🔇 Silencio' : '🔊 Voz Activa';
   if(mute) window.speechSynthesis.cancel();
 }
 
@@ -202,7 +261,8 @@ function speak(text){
 function tab(t){
   ['billete','tipo','frontera','calcula','bot'].forEach(x=>{
     document.getElementById('p'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('hidden',x!==t);
-    document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('bg-green-600',x===t);
+    document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('active',x===t);
+    document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('bg-slate-700',x!==t);
   });
   document.getElementById('resultado').classList.add('hidden');
   if(!premium && t!=='billete') checkLimite();
@@ -217,7 +277,6 @@ function checkLimite(){
 
 async function actualizarTipo(){
   try{
-    // API gratis tipo cambio
     const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const data = await res.json();
     tipoCambio = data.rates.PEN || 3.75;
@@ -277,9 +336,9 @@ function startVoice(){
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SpeechRecognition();
   recognition.lang = paisActual === 'PE'? 'es-PE' : 'es-MX'; recognition.continuous = false;
-  document.getElementById('btnMic').innerText = '🔴';
+  document.getElementById('btnMic').innerHTML = '<div class="text-3xl">🔴</div>';
   recognition.onresult = (e) => { document.getElementById('chatInput').value = e.results[0][0].transcript; askBot(); };
-  recognition.onend = () => { document.getElementById('btnMic').innerText = '🎤'; };
+  recognition.onend = () => { document.getElementById('btnMic').innerHTML = '<div class="text-3xl">🎤</div>'; };
   recognition.start();
 }
 
@@ -299,14 +358,14 @@ function askBot(){
 function mostrar(res,col,det){
   document.getElementById('resultado').classList.remove('hidden');
   document.getElementById('textoResult').innerHTML=res;
-  document.getElementById('textoResult').className=`text-2xl font-bold mb-3 ${col}`;
+  document.getElementById('textoResult').className=`text-3xl font-bold mb-4 ${col}`;
   document.getElementById('detalle').innerText=det;
 }
 
 function activarPremium(){
   const codigo = prompt('Ingresa tu código de activación:');
   const fecha = new Date(); fecha.setMonth(fecha.getMonth()+1);
-  const codigos = ['OXI1DOLAR','PE380','EC1USD','CLIENTE01','CLIENTE02'];
+  const codigos = ['OXI1DOLAR','PE380','EC1USD','CLIENTE01','CLIENTE02','CLIENTE03'];
   if(codigos.includes(codigo) || codigo?.startsWith('OXI')){
     localStorage.setItem('oxibot_premium', codigo);
     localStorage.setItem('oxibot_fecha', fecha.toISOString());

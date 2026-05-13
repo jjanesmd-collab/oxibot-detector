@@ -3,20 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OxiBot - Invierte $1 en tu seguridad</title>
+<title>OxiBot Modular</title>
 <meta name="theme-color" content="#16a34a">
-<link rel="manifest" href="data:application/json,{'name':'OxiBot Seguridad','short_name':'OxiBot','start_url':'.','display':'standalone','background_color':'#0f172a','theme_color':'#16a34a','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/2910/2910768.png','sizes':'512x512'}]}">
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.18.0/dist/tf.min.js"></script>
 <style>
 .btn-3d{box-shadow:0 8px 0 #0f5132,0 15px 20px rgba(0,0,0,0.4);transform:translateY(0);transition:all 0.1s}
 .btn-3d:active{box-shadow:0 2px 0 #0f5132,0 5px 10px rgba(0,0,0,0.4);transform:translateY(6px)}
 .tab-3d{box-shadow:0 4px 0 #1e293b,0 8px 15px rgba(0,0,0,0.3);transition:all 0.1s}
-.tab-3d:active{box-shadow:0 1px 0 #1e293b;transform:translateY(3px)}
 .tab-3d.active{box-shadow:0 2px 0 #15803d,0 6px 12px rgba(22,163,74,0.4);transform:translateY(2px);background:linear-gradient(145deg,#16a34a,#15803d)}
-.uv-mode{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
-.pulse{animation:pulse 2s infinite}
+@keyframes slideIn{from{transform:translateY(100px);opacity:0}to{transform:translateY(0);opacity:1}}
+.card-enter{animation:slideIn 0.4s ease-out}
 </style>
 </head>
 <body class="bg-slate-900 text-white min-h-screen">
@@ -24,517 +20,133 @@
 <div class="text-center mb-4 pt-6">
 <img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" class="w-16 mx-auto mb-2">
 <h1 class="text-2xl font-bold">OxiBot</h1>
-<p class="text-green-400 text-sm font-bold" id="lema">Invierte $1 en tu seguridad al mes</p>
-<div class="flex gap-2 justify-center mt-3">
-<button onclick="toggleMute()" id="btnMute" class="text-xs bg-slate-700 px-4 py-2 rounded-full btn-3d">🔊 Voz</button>
-<select id="pais" onchange="cambiarPais()" class="text-xs bg-slate-700 px-3 py-2 rounded-full btn-3d">
-<option value="LATAM">🌎 LATAM</option>
-<option value="PE">🇵🇪 Perú</option>
-<option value="EC">🇪🇨 Ecuador</option>
-<option value="CO">🇨🇴 Colombia</option>
-</select>
-</div>
+<p class="text-green-400 text-sm font-bold" id="lema">Modular v10.0</p>
 </div>
 
-<!-- TABS GIGANTES 3D -->
-<div class="grid grid-cols-5 gap-2 mb-5">
-<button onclick="tab('billete')" id="tabBillete" class="tab-3d active bg-green-600 rounded-2xl py-4 flex flex-col items-center">
-<div class="text-3xl mb-1">💵</div><div class="text-[10px] font-bold">BILLETE</div>
-</button>
-<button onclick="tab('uv')" id="tabUv" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
-<div class="text-3xl mb-1">💡</div><div class="text-[10px] font-bold">LUZ</div>
-</button>
-<button onclick="tab('tipo')" id="tabTipo" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
-<div class="text-3xl mb-1">💱</div><div class="text-[10px] font-bold">DÓLAR</div>
-</button>
-<button onclick="tab('red')" id="tabRed" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
-<div class="text-3xl mb-1">🚨</div><div class="text-[10px] font-bold">SCAMFEED</div>
-</button>
-<button onclick="tab('bot')" id="tabBot" class="tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center">
-<div class="text-3xl mb-1">🤖</div><div class="text-[10px] font-bold">OXIBOT</div>
-</button>
-</div>
+<!-- TABS SE CARGAN DINÁMICOS -->
+<div id="tabsContainer" class="grid grid-cols-5 gap-2 mb-5"></div>
 
-<!-- 1. DETECTOR IA -->
-<div id="pBillete">
-<div class="bg-slate-800 rounded-3xl p-5 mb-4">
-<h2 class="font-bold mb-4 text-base">Detector IA - 85% Precisión</h2>
-<input type="file" accept="image/*" capture="environment" id="foto" class="hidden">
-<button onclick="document.getElementById('foto').click()" class="w-full bg-green-600 py-5 rounded-2xl font-bold mb-4 btn-3d text-lg">
-<div class="text-4xl mb-1">📸</div>TOMAR FOTO
-</button>
-<img id="preview" class="w-full rounded-2xl mb-4 hidden">
-<div id="iaStatus" class="text-xs text-yellow-400 text-center mb-3 hidden pulse">🧠 Cargando IA...</div>
-<select id="tipo" class="w-full bg-slate-700 p-4 rounded-2xl mb-4 text-base">
-<option value="">¿Qué billete es?</option>
-<option value="S/10">S/10</option><option value="S/20">S/20</option><option value="S/50">S/50</option>
-<option value="S/100">S/100</option><option value="USD20">$20</option><option value="USD100">$100</option>
-</select>
-<button onclick="analizarIA()" class="w-full bg-blue-600 py-5 rounded-2xl font-bold btn-3d text-lg">
-<div class="text-4xl mb-1">🧠</div>ANALIZAR CON IA
-</button>
-</div>
-</div>
+<!-- CONTENIDO MÓDULOS SE INYECTA AQUÍ -->
+<div id="modulosContainer"></div>
 
-<!-- 2. LUZ DE VERIFICACIÓN -->
-<div id="pUv" class="hidden">
-<div class="bg-slate-800 rounded-3xl p-5 mb-4">
-<h2 class="font-bold mb-4 text-base">Luz de Verificación</h2>
-<div class="bg-purple-900/30 border-purple-600 rounded-2xl p-4 mb-4 text-sm">
-⚠️ <b>Realidad:</b> Celular NO emite UV real. Esta luz te ayuda a ver a contraluz.<br><br>
-<b>Checklist Billete REAL:</b><br>
-✓ Marca agua: rostro + valor nítido<br>
-✓ Hilo seguridad: cambia color al inclinar<br>
-✓ Microtexto "BCRP": letras diminutas claras<br>
-✓ Tinta cambia: verde→azul en esquina
-</div>
-<div class="grid grid-cols-2 gap-3 mb-4">
-<button onclick="modoInspeccion('violeta')" class="bg-purple-900 py-5 rounded-2xl font-bold btn-3d text-lg">
-<div class="text-4xl mb-1">🟣</div>LUZ VIOLETA
-</button>
-<button onclick="modoInspeccion('blanca')" class="bg-white text-black py-5 rounded-2xl font-bold btn-3d text-lg">
-<div class="text-4xl mb-1">⚪</div>LUZ BLANCA
-</button>
-</div>
-<button onclick="modoInspeccion('flash')" class="w-full bg-yellow-500 text-black py-5 rounded-2xl font-bold btn-3d text-lg">
-<div class="text-4xl mb-1">🔦</div>FLASH + LUPA
-</button>
-<div class="bg-slate-700 rounded-2xl p-4 mt-4 text-xs">
-<b>TRUCO PRO:</b> Cuarto oscuro. Billete sobre pantalla. Si NO ves marca agua nítida = FAKE 99%
-</div>
-</div>
-</div>
-
-<!-- 3. DÓLAR + ANTI-SPOOFING -->
-<div id="pTipo" class="hidden">
-<div class="bg-slate-800 rounded-3xl p-5 mb-4">
-<h2 class="font-bold mb-4 text-base">Tipo Cambio + Anti-Estafa</h2>
-<div class="bg-slate-700 rounded-2xl p-6 mb-4 text-center">
-<div class="text-sm text-slate-400 mb-2">DÓLAR HOY</div>
-<div class="text-5xl font-bold text-green-400" id="precioDolar">S/3.75</div>
-<div class="text-sm text-slate-400 mt-2">Compra: S/3.74 | Venta: S/3.77</div>
-<div class="text-xs text-slate-500 mt-3" id="updateTime">Actualizado hace 2 min</div>
-</div>
-<button onclick="actualizarTipo()" class="w-full bg-blue-600 py-4 rounded-2xl font-bold btn-3d mb-3">
-<div class="text-3xl mb-1">🔄</div>ACTUALIZAR
-</button>
-<button onclick="verificarLlamada()" class="w-full bg-red-600 py-5 rounded-2xl font-bold btn-3d text-lg">
-<div class="text-4xl mb-1">📞</div>VERIFICAR LLAMADA BANCO
-</button>
-<div class="text-xs text-slate-400 mt-3 text-center">Detecta si te llaman de banco real o fake</div>
-</div>
-
-<!-- CASAS CAMBIO TRUJILLO -->
-<div class="bg-slate-800 rounded-3xl p-5 mb-4">
-<h2 class="font-bold mb-4 text-base">Casas Cambio Trujillo</h2>
-<div id="casasCambio" class="space-y-3"></div>
-<div class="text-xs text-slate-400 mt-3 text-center">Toca "Cómo llegar" para abrir Maps</div>
-</div>
-</div>
-
-<!-- 4. SCAMFEED -->
-<div id="pRed" class="hidden">
-<div class="bg-slate-800 rounded-3xl p-5 mb-4">
-<h2 class="font-bold mb-4 text-base">Oxi Scamfeed - Tiempo Real</h2>
-<button onclick="reportarEstafa()" class="w-full bg-red-600 py-5 rounded-2xl font-bold btn-3d text-lg mb-4">
-<div class="text-4xl mb-1">🚨</div>REPORTAR ESTAFA
-</button>
-<div class="bg-slate-700 rounded-2xl p-4">
-<div class="text-sm font-bold mb-3">Feed en vivo:</div>
-<div id="listaEstafas" class="text-xs space-y-3 max-h-60 overflow-y-auto"></div>
-</div>
-<div class="text-xs text-slate-400 mt-3 text-center">100% Anónimo. Comunidad protegida.</div>
-</div>
-</div>
-
-<!-- 5. BOT -->
-<div id="pBot" class="hidden">
-<div class="bg-slate-800 rounded-3xl p-5 mb-4">
-<h2 class="font-bold mb-4 text-base">Asistente OxiBot</h2>
-<div id="chatBox" class="bg-slate-700 rounded-2xl p-4 mb-4 h-48 overflow-y-auto text-sm">
-<p class="text-slate-400">OxiBot: ¿En qué te ayudo?</p>
-</div>
-<div class="flex gap-3 mb-4">
-<input id="chatInput" placeholder="Escribe o habla..." class="flex-1 bg-slate-700 p-4 rounded-2xl text-base">
-<button onclick="startVoice()" id="btnMic" class="bg-red-600 px-6 rounded-2xl font-bold btn-3d">
-<div class="text-3xl">🎤</div>
-</button>
-</div>
-<button onclick="askBot()" class="w-full bg-purple-600 py-5 rounded-2xl font-bold btn-3d text-lg">
-<div class="text-4xl mb-1">💬</div>CONSULTAR
-</button>
-</div>
-</div>
-
-<!-- RESULTADO -->
-<div id="resultado" class="hidden bg-slate-800 rounded-3xl p-5 mb-4">
-<h3 class="font-bold text-xl mb-3">Resultado IA:</h3>
-<div id="textoResult" class="text-3xl font-bold mb-4"></div>
-<div id="detalle" class="text-base text-slate-300"></div>
-<div id="confianza" class="text-sm text-green-400 mt-2"></div>
-<button onclick="location.reload()" class="w-full bg-slate-700 py-4 rounded-2xl mt-5 btn-3d">Nueva verificación</button>
-</div>
-
-<!-- PAYWALL ANÓNIMO -->
-<div id="paywall" class="hidden bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl p-5 mb-4">
-<div class="text-center">
-<div class="text-xl font-bold mb-2">🔓 Desbloquea Todo x <span id="precioPlan">$1/mes</span></div>
-<div class="text-sm mb-4">5 herramientas + IA + Sin anuncios + Anónimo</div>
-<button onclick="activarPremium()" class="w-full bg-white text-green-600 py-4 rounded-2xl font-bold mb-3 btn-3d text-lg">🔑 TENGO CÓDIGO</button>
-<button onclick="pagar()" class="w-full bg-yellow-400 text-black py-4 rounded-2xl font-bold btn-3d text-lg">💳 PAGAR <span id="precioBtn">$1</span></button>
-<div class="text-xs mt-3 opacity-90">Soporte anónimo: t.me/OxiBotSoporte</div>
-</div>
-</div>
-
-<div class="bg-amber-900/30 border border-amber-600 rounded-2xl p-4 text-sm">⚠️ Herramienta educativa. No reemplaza verificación oficial. Celular no emite UV real.</div>
-<div class="text-center mt-5 text-slate-500 text-xs">V8.0 Final | 5 herramientas x $1/mes<br>Soporte: t.me/OxiBotSoporte</div>
+<!-- PAYWALL DINÁMICO -->
+<div id="paywall" class="hidden"></div>
 </div>
 
 <script>
-let mute=false,recognition,paisActual='LATAM',tipoCambio=3.75,premium=false,modelo=null,flashStream=null;
-const foto=document.getElementById('foto'),preview=document.getElementById('preview');
-foto.onchange=e=>{const file=e.target.files[0];if(file){preview.src=URL.createObjectURL(file);preview.classList.remove('hidden');cargarModelo();}};
+// CONFIG GLOBAL
+let MODULOS_ACTIVOS = JSON.parse(localStorage.getItem('oxibot_modulos')||'[]');
+let CONFIG_MODULOS = {};
 
-const precios={'PE':'S/3.80','EC':'$1.00','CO':'$4,000','LATAM':'$1.00'};
-const lemas={'PE':'Invierte S/3.80 en tu seguridad al mes','EC':'Invierte $1 en tu seguridad al mes','CO':'Invierte $4,000 COP en tu seguridad al mes','LATAM':'Invierte $1 en tu seguridad al mes'};
-
-// CASAS CAMBIO TRUJILLO
-const casasCambioTrujillo = [
-  {nombre:'PeruMoney', dir:'Av. América Oeste 550', tel:'', maps:'-8.1119,-79.0289'},
-  {nombre:'Global Money', dir:'Av. Larco 1535', tel:'+51910944724', maps:'-8.1234,-79.0456'},
-  {nombre:'Casa H&L', dir:'Frente Real Plaza', tel:'+51914612439', maps:'-8.1098,-79.0378'},
-  {nombre:'American Dollar', dir:'Av. Húsares Junín 306', tel:'+5144222994', maps:'-8.1089,-79.0298'},
-  {nombre:'La Casita De Cambio', dir:'Jr. Diego Almagro 545', tel:'+5144468499', maps:'-8.1112,-79.0287'}
-];
-
-async function cargarModelo(){
-  if(modelo) return;
-  document.getElementById('iaStatus').classList.remove('hidden');
+// CARGAR CONFIG DE MÓDULOS DESDE JSON
+async function init(){
   try{
-    modelo = await tf.loadLayersModel('https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json');
-    document.getElementById('iaStatus').innerText = '✅ IA Lista - 85% Precisión';
-    setTimeout(()=>document.getElementById('iaStatus').classList.add('hidden'),2000);
+    const res = await fetch('./config/modulos.json');
+    CONFIG_MODULOS = await res.json();
+    cargarTabs();
+    cargarModulosActivos();
   }catch(e){
-    document.getElementById('iaStatus').innerText = '⚠️ Modo Heurística - 70% Precisión';
+    // Si no hay config, usar módulo gratis por defecto
+    MODULOS_ACTIVOS = ['billete'];
+    cargarTabs();
   }
 }
 
-function cambiarPais(){
-  paisActual=document.getElementById('pais').value;
-  document.getElementById('lema').innerText=lemas[paisActual];
-  document.getElementById('precioPlan').innerText=precios[paisActual]+'/mes';
-  document.getElementById('precioBtn').innerText=precios[paisActual];
-}
+function cargarTabs(){
+  const cont = document.getElementById('tabsContainer');
+  cont.innerHTML = '';
 
-window.addEventListener('load',()=>{
-  checkPremium();
-  actualizarTipo();
-  cargarEstafas();
-  cargarCasasCambio();
-  setTimeout(()=>{
-    const saludos={'PE':'Hola causa, OxiBot te protege por S/3.80 al mes','EC':'Hola pana, OxiBot por $1 al mes','CO':'Hola parce, OxiBot por $4,000 al mes','LATAM':'Hola, 5 herramientas por $1 al mes'};
-    speak(saludos[paisActual]);
-  },1500);
-});
-
-function cargarCasasCambio(){
-  const html = casasCambioTrujillo.map(c=>`
-    <div class="bg-slate-700 rounded-2xl p-4">
-      <div class="font-bold text-sm">${c.nombre}</div>
-      <div class="text-xs text-slate-400 mt-1">${c.dir}</div>
-      <div class="flex gap-2 mt-3">
-        ${c.tel?`<a href="tel:${c.tel}" class="flex-1 bg-green-600 py-2 rounded-xl text-center text-xs font-bold">📞 Llamar</a>`:''}
-        <a href="https://www.google.com/maps/search/?api=1&query=${c.maps}" target="_blank" class="flex-1 bg-blue-600 py-2 rounded-xl text-center text-xs font-bold">📍 Cómo llegar</a>
-      </div>
-    </div>
-  `).join('');
-  document.getElementById('casasCambio').innerHTML = html;
-}
-
-function verificarLlamada(){
-  const num = prompt('Número que te está llamando:\nEj: +51013110000');
-  if(!num) return;
-  const bancosOficiales = ['+51013110000','+51013112500','+51013112211','+51013100','+51013112345'];
-  const limpio = num.replace(/\s|-/g,'');
-  if(!bancosOficiales.includes(limpio)){
-    speak('ALERTA. Este número no es de ningún banco oficial. Es estafa. Cuelga inmediatamente.');
-    navigator.vibrate([500,200,500,200,500]);
-    alert('🚨 NÚMERO FALSO\n\nEste número NO pertenece a BCP, Interbank, Scotiabank ni BBVA.\n\nCUELGA YA. Es estafa.');
-  } else {
-    speak('Número verificado. Es del banco oficial.');
-    alert('✅ NÚMERO VERIFICADO\n\nEste sí es del banco. Puedes contestar.');
-  }
-}
-
-function checkPremium(){
-  const codigo=localStorage.getItem('oxibot_premium');
-  const fecha=localStorage.getItem('oxibot_fecha');
-  if(codigo&&fecha&&new Date()<new Date(fecha)){
-    premium=true;
-    document.getElementById('paywall').classList.add('hidden');
-    return true;
-  }
-  return false;
-}
-
-function toggleMute(){
-  mute=!mute;
-  document.getElementById('btnMute').innerText=mute?'🔇 Silencio':'🔊 Voz';
-  if(mute)window.speechSynthesis.cancel();
-}
-
-function speak(text){
-  if(mute||!('speechSynthesis'in window))return;
-  window.speechSynthesis.cancel();
-  const msg=new SpeechSynthesisUtterance(text);
-  msg.lang=paisActual==='PE'?'es-PE':paisActual==='EC'?'es-EC':paisActual==='CO'?'es-CO':'es-MX';
-  msg.rate=1.0;window.speechSynthesis.speak(msg);
-}
-
-function tab(t){
-  ['billete','uv','tipo','red','bot'].forEach(x=>{
-    document.getElementById('p'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('hidden',x!==t);
-    document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('active',x===t);
-    document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('bg-slate-700',x!==t);
-  });
-  document.getElementById('resultado').classList.add('hidden');
-  if(!premium&&t!=='billete')checkLimite();
-}
-
-function checkLimite(){
-  let usos=localStorage.getItem('oxibot_usos')||0;
-  if(usos>=3&&!premium){
-    document.getElementById('paywall').classList.remove('hidden');
-  }
-}
-
-function modoInspeccion(tipo){
-  if(flashStream) flashStream.getTracks().forEach(t=>t.stop());
-  const uv=document.createElement('div');
-  uv.className='uv-mode';
-
-  const btnCerrar = `
-    <button id="btnCerrarUV"
-      style="position:fixed;top:20px;right:20px;width:60px;height:60px;
-      background:rgba(0,0,0,0.7);border:3px solid white;border-radius:50%;
-      font-size:36px;color:white;z-index:10001;cursor:pointer;
-      display:flex;align-items:center;justify-content:center;font-weight:bold;">
-      ✕
-    </button>
-  `;
-
-  if(tipo==='violeta'){
-    uv.style.background='#4c1d95';
-    uv.innerHTML=btnCerrar+`
-      <div style="color:white;text-align:center;padding-top:30vh;font-size:20px">
-        <div style="font-size:48px;margin-bottom:20px">🔍</div>
-        <b>LUZ VIOLETA</b><br>
-        <span style="font-size:14px;opacity:0.9">Pasa billete a contraluz</span><br>
-        <span style="font-size:12px;opacity:0.7">Busca: Marca agua + Hilo + Microtexto</span><br><br>
-        <span style="font-size:11px;opacity:0.5">Toca X o desliza abajo</span>
-      </div>`;
-  } else if(tipo==='blanca'){
-    uv.style.background='#fff';
-    uv.innerHTML=btnCerrar+`
-      <div style="color:black;text-align:center;padding-top:30vh;font-size:20px">
-        <div style="font-size:48px;margin-bottom:20px">💡</div>
-        <b>LUZ BLANCA MÁXIMA</b><br>
-        <span style="font-size:14px;opacity:0.9">Busca tinta cambia color</span><br>
-        <span style="font-size:12px;opacity:0.7">Verde→Azul en esquina = REAL</span><br><br>
-        <span style="font-size:11px;opacity:0.5">Toca X o desliza abajo</span>
-      </div>`;
-  } else if(tipo==='flash'){
-    uv.style.background='#000';
-    uv.innerHTML=btnCerrar+`
-      <div style="color:white;text-align:center;padding-top:30vh;font-size:20px">
-        <div style="font-size:48px;margin-bottom:20px">🔦</div>
-        <b>FLASH ACTIVADO</b><br>
-        <span style="font-size:14px;opacity:0.9">Acerca billete a cámara</span><br>
-        <span style="font-size:12px;opacity:0.7">Busca fibras brillantes</span><br><br>
-        <span style="font-size:11px;opacity:0.5">Toca X o desliza abajo</span>
-      </div>`;
-
-    navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
- .then(stream=>{
-      flashStream=stream;
-      const track=stream.getVideoTracks()[0];
-      if(track.getCapabilities().torch){
-        track.applyConstraints({advanced:[{torch:true}]});
-      }
-    }).catch(()=>{});
-  }
-
-  window.cerrarUV = ()=>{
-    if(flashStream) flashStream.getTracks().forEach(t=>t.stop());
-    uv.remove();
-    delete window.cerrarUV;
-  };
-
-  document.getElementById('btnCerrarUV').onclick=window.cerrarUV;
-  const escListener = (e)=>{ if(e.key==='Escape') window.cerrarUV(); };
-  document.addEventListener('keydown', escListener);
-  uv.addEventListener('remove', ()=>document.removeEventListener('keydown', escListener));
-
-  let startY = 0;
-  uv.addEventListener('touchstart', e=>{ startY = e.touches[0].clientY; });
-  uv.addEventListener('touchend', e=>{
-    if(e.changedTouches[0].clientY - startY > 100) window.cerrarUV();
+  MODULOS_ACTIVOS.forEach(id=>{
+    const m = CONFIG_MODULOS[id];
+    if(!m) return;
+    const btn = document.createElement('button');
+    btn.className = 'tab-3d bg-slate-700 rounded-2xl py-4 flex flex-col items-center';
+    btn.innerHTML = `<div class="text-3xl mb-1">${m.icon}</div><div class="text-[10px] font-bold">${m.nombre}</div>`;
+    btn.onclick = ()=>mostrarModulo(id);
+    cont.appendChild(btn);
   });
 
-  document.body.appendChild(uv);
+  // Botón tienda
+  const btnTienda = document.createElement('button');
+  btnTienda.className = 'tab-3d bg-blue-600 rounded-2xl py-4 flex flex-col items-center';
+  btnTienda.innerHTML = `<div class="text-3xl mb-1">➕</div><div class="text-[10px] font-bold">TIENDA</div>`;
+  btnTienda.onclick = mostrarTienda;
+  cont.appendChild(btnTienda);
+
+  if(MODULOS_ACTIVOS.length>0) mostrarModulo(MODULOS_ACTIVOS[0]);
 }
 
-async function actualizarTipo(){
-  try{
-    const res=await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-    const data=await res.json();
-    tipoCambio=data.rates.PEN||3.75;
-    document.getElementById('precioDolar').innerText='S/'+tipoCambio.toFixed(2);
-    document.getElementById('updateTime').innerText='Actualizado: '+new Date().toLocaleTimeString();
-  }catch(e){tipoCambio=3.75;}
-}
+async function cargarModulosActivos(){
+  for(const id of MODULOS_ACTIVOS){
+    const m = CONFIG_MODULOS[id];
+    if(!m) continue;
+    // Cargar HTML del módulo
+    const div = document.createElement('div');
+    div.id = `mod-${id}`;
+    div.className = 'hidden';
+    div.innerHTML = m.html;
+    document.getElementById('modulosContainer').appendChild(div);
 
-function reportarEstafa(){
-  const num=prompt('Número del estafador (+51...):');
-  if(!num) return;
-  const tipo=prompt('Tipo de estafa:\n1. Yape falso\n2. Billete fake\n3. Llamada banco fake\n4. Otro\nEscribe:');
-  const lugar=prompt('Lugar (Ej: Huaquillas, Trujillo):');
-  if(tipo){
-    const reportes=JSON.parse(localStorage.getItem('oxibot_reportes')||'[]');
-    reportes.unshift({
-      num:num.slice(-4),
-      tipo:tipo,
-      fecha:new Date().toLocaleString('es-PE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),
-      pais:paisActual,
-      lugar:lugar||'No especificado',
-      id:Date.now()
-    });
-    localStorage.setItem('oxibot_reportes',JSON.stringify(reportes.slice(0,50)));
-    cargarEstafas();
-    speak('Reporte anónimo enviado. Gracias por proteger a la comunidad');
-    alert('✅ Reporte enviado anónimamente\n\nTu reporte ayuda a 1000+ usuarios');
+    // Cargar JS del módulo
+    if(m.js){
+      const script = document.createElement('script');
+      script.textContent = m.js;
+      document.body.appendChild(script);
+    }
   }
 }
 
-function cargarEstafas(){
-  const reportes=JSON.parse(localStorage.getItem('oxibot_reportes')||'[]');
-  const html=reportes.map(r=>`
-    <div class="bg-slate-800 p-3 rounded-lg">
-      <div class="flex justify-between items-start mb-1">
-        <span class="font-bold text-red-400">🚨 ${r.tipo}</span>
-        <span class="text-[10px] text-slate-500">${r.fecha}</span>
+function mostrarModulo(id){
+  document.querySelectorAll('#modulosContainer > div').forEach(d=>d.classList.add('hidden'));
+  document.getElementById(`mod-${id}`).classList.remove('hidden');
+  document.querySelectorAll('.tab-3d').forEach(t=>t.classList.remove('active','bg-green-600'));
+  event.target.closest('.tab-3d').classList.add('active','bg-green-600');
+}
+
+function mostrarTienda(){
+  let html = '<div class="bg-slate-800 rounded-3xl p-5"><h2 class="font-bold mb-4">🛒 Tienda de Módulos</h2>';
+  Object.keys(CONFIG_MODULOS).forEach(id=>{
+    const m = CONFIG_MODULOS[id];
+    const activo = MODULOS_ACTIVOS.includes(id);
+    html += `
+      <div class="bg-slate-700 rounded-2xl p-4 mb-3 flex justify-between items-center">
+        <div>
+          <div class="font-bold">${m.icon} ${m.nombre}</div>
+          <div class="text-xs text-slate-400">${m.desc}</div>
+          <div class="text-xs text-green-400 mt-1">$${m.precio}/mes</div>
+        </div>
+        ${activo? '<div class="text-green-400 text-xs">✓ Activo</div>' : `<button onclick="comprarModulo('${id}')" class="bg-green-600 px-4 py-2 rounded-xl text-xs font-bold">Activar</button>`}
       </div>
-      <div class="text-xs">+51 ***${r.num} - ${r.lugar} ${r.pais}</div>
-      <button onclick="confirmarReporte(${r.id})" class="text-[10px] text-green-400 mt-1">✓ Confirmar (${r.confirmados||0})</button>
-    </div>
-  `).join('');
-  document.getElementById('listaEstafas').innerHTML=html||'<div class="text-slate-500">Sin reportes. Sé el primero en proteger.</div>';
+    `;
+  });
+  html += `<button onclick="activarPack()" class="w-full bg-yellow-500 text-black py-4 rounded-2xl font-bold mt-4">🔥 PACK COMPLETO $1/mes</button></div>`;
+
+  const modal = document.createElement('div');
+  modal.className = 'fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 overflow-y-auto';
+  modal.innerHTML = html;
+  modal.onclick = (e)=>{ if(e.target===modal) modal.remove(); };
+  document.body.appendChild(modal);
 }
 
-function confirmarReporte(id){
-  const reportes=JSON.parse(localStorage.getItem('oxibot_reportes')||'[]');
-  const r = reportes.find(x=>x.id===id);
-  if(r){
-    r.confirmados = (r.confirmados||0) + 1;
-    localStorage.setItem('oxibot_reportes',JSON.stringify(reportes));
-    cargarEstafas();
-  }
+function comprarModulo(id){
+  window.open(`https://t.me/OxiBotSoporte?text=Quiero activar módulo: ${CONFIG_MODULOS[id].nombre}`);
 }
 
-async function analizarIA(){
-  if(!premium)checkLimite();
-  const tipo=document.getElementById('tipo').value;
-  if(!preview.src||!tipo){alert('Toma foto y selecciona billete');return;}
-
-  document.getElementById('iaStatus').classList.remove('hidden');
-  document.getElementById('iaStatus').innerText='🧠 Analizando con IA...';
-
-  setTimeout(()=>{
-    let confianza, esFalso, resultado, color, detalle, voz;
-
-    if(modelo){
-      confianza=Math.random()*15+80;
-      esFalso=confianza<83;
-    } else {
-      confianza=Math.random()*10+70;
-      esFalso=confianza<75;
-    }
-
-    if(esFalso){
-      resultado='FALSO 🔴';
-      color='text-red-500';
-      detalle=`IA detectó: Textura irregular, Marca agua borrosa, Hilo sin cambio color, Microtexto ilegible. ALTO RIESGO.`;
-      voz='ALERTA. Inteligencia artificial detectó billete falso con '+confianza.toFixed(0)+' por ciento de certeza. No lo reciba.';
-    } else {
-      resultado='AUTÉNTICO ✅';
-      color='text-green-400';
-      detalle=`IA verificó: Hilo seguridad OK, Marca agua nítida, Microtexto BCRP legible, Tinta óptica variable OK, Fibras UV OK.`;
-      voz='Billete auténtico según inteligencia artificial con '+confianza.toFixed(0)+' por ciento de certeza.';
-    }
-
-    mostrar(resultado,color,detalle);
-    document.getElementById('confianza').innerText=`Confianza IA: ${confianza.toFixed(1)}% | Modelo: ${modelo?'MobileNet V1':'Heurística'}`;
-    document.getElementById('iaStatus').classList.add('hidden');
-    speak(voz);
-    if(!premium)localStorage.setItem('oxibot_usos',(parseInt(localStorage.getItem('oxibot_usos')||0)+1));
-  },2500);
+function activarPack(){
+  window.open(`https://t.me/OxiBotSoporte?text=Quiero PACK COMPLETO todos los módulos`);
 }
 
-function startVoice(){
-  if(!('webkitSpeechRecognition'in window)&&!('SpeechRecognition'in window)){alert('Usa Chrome Android');return;}
-  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-  recognition=new SpeechRecognition();
-  recognition.lang=paisActual==='PE'?'es-PE':'es-MX';recognition.continuous=false;
-  document.getElementById('btnMic').innerHTML='<div class="text-3xl">🔴</div>';
-  recognition.onresult=(e)=>{document.getElementById('chatInput').value=e.results[0][0].transcript;askBot();};
-  recognition.onend=()=>{document.getElementById('btnMic').innerHTML='<div class="text-3xl">🎤</div>';};
-  recognition.start();
-}
-
-function askBot(){
-  const q=document.getElementById('chatInput').value.toLowerCase();
-  const chatBox=document.getElementById('chatBox');
-  if(!q)return;
-  let reply='Puedo ayudarte con: billetes falsos, luz verificación, tipo cambio, reportar estafas, verificar llamadas. ¿Qué necesitas?';
-  if(q.includes('dolar'))reply=`El dólar está a S/${tipoCambio.toFixed(2)} hoy en Huaquillas.`;
-  if(q.includes('luz')||q.includes('ver'))reply='Usa pestaña 💡. Luz violeta para marca agua, blanca para microtexto, flash para fibras.';
-  if(q.includes('falso')||q.includes('billete'))reply='Pestaña 💵 usa IA con 85% precisión. Toma foto y analiza.';
-  if(q.includes('estafa')||q.includes('reportar'))reply='Pestaña 🚨 reporta estafadores anónimamente. Es Scamfeed en vivo.';
-  if(q.includes('llamada')||q.includes('banco'))reply='Pestaña 💱 > Verificar Llamada Banco. Detecta números fake.';
-  if(q.includes('casa')||q.includes('cambio'))reply='Pestaña 💱 muestra casas cambio Trujillo con mapa y teléfono.';
-  if(q.includes('precio')||q.includes('costo'))reply=`Solo ${precios[paisActual]} al mes. 5 herramientas. Sin contacto directo.`;
-  chatBox.innerHTML+=`<p class="mt-2"><b>Tú:</b> ${document.getElementById('chatInput').value}</p>`;
-  chatBox.innerHTML+=`<p class="mt-1 text-green-400"><b>OxiBot:</b> ${reply}</p>`;
-  chatBox.scrollTop=chatBox.scrollHeight;document.getElementById('chatInput').value='';speak(reply);
-}
-
-function mostrar(res,col,det){
-  document.getElementById('resultado').classList.remove('hidden');
-  document.getElementById('textoResult').innerHTML=res;
-  document.getElementById('textoResult').className=`text-3xl font-bold mb-4 ${col}`;
-  document.getElementById('detalle').innerText=det;
-}
-
-function activarPremium(){
-  const codigo=prompt('Ingresa código de activación:');
-  const fecha=new Date();fecha.setMonth(fecha.getMonth()+1);
-  const codigos=['OXI1DOLAR','PE380','EC1USD','CO4000','OXIBOT2026','OXIPRO'];
-  if(codigos.includes(codigo)||codigo?.startsWith('OXI')){
-    localStorage.setItem('oxibot_premium',codigo);
-    localStorage.setItem('oxibot_fecha',fecha.toISOString());
-    alert('✅ Premium activado hasta '+fecha.toLocaleDateString());
-    speak('Premium activado. Gracias por confiar en OxiBot');
+// Activar con código desde admin
+window.activarModuloCodigo = function(codigo){
+  const mapa = JSON.parse(localStorage.getItem('oxibot_codigos')||'{}');
+  if(mapa[codigo]){
+    MODULOS_ACTIVOS = [...new Set([...MODULOS_ACTIVOS,...mapa[codigo]])];
+    localStorage.setItem('oxibot_modulos', JSON.stringify(MODULOS_ACTIVOS));
     location.reload();
-  }else{
-    alert('Código inválido. Contacta t.me/OxiBotSoporte');
   }
 }
 
-function pagar(){
-  window.open('https://t.me/OxiBotSoporte');
-}
-
-tab('billete');
+init();
 </script>
 </body>
 </html>

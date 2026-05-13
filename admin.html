@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OxiBot Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white p-4">
+<div class="max-w-4xl mx-auto">
+<h1 class="text-3xl font-bold mb-6">🔐 Panel Admin OxiBot</h1>
+<div id="login" class="bg-slate-800 rounded-2xl p-6 mb-6">
+<input type="password" id="pass" placeholder="Contraseña admin" class="w-full bg-slate-700 p-3 rounded-xl mb-3">
+<button onclick="login()" class="w-full bg-green-600 py-3 rounded-xl font-bold">Entrar</button>
+</div>
+<div id="panel" class="hidden">
+<div class="bg-slate-800 rounded-2xl p-6 mb-6">
+<h2 class="font-bold mb-4">🤖 Generador Módulos</h2>
+<textarea id="promptIA" placeholder="Describe el módulo: Ej: Detector Yape falso con IA" class="w-full bg-slate-700 p-3 rounded-xl mb-3 h-24"></textarea>
+<button onclick="generarModulo()" class="w-full bg-purple-600 py-3 rounded-xl font-bold">✨ Generar JSON</button>
+<div id="resultadoIA" class="mt-4"></div>
+</div>
+<div class="bg-slate-800 rounded-2xl p-6">
+<h2 class="font-bold mb-4">🔑 Activar Módulos Manual</h2>
+<div class="text-sm text-slate-400 mb-3">Pega en consola del navegador del cliente:</div>
+<div class="bg-slate-700 p-3 rounded-xl font-mono text-xs">localStorage.setItem('oxibot_modulos','["billete","luz","radar"]');location.reload()</div>
+</div>
+</div>
+</div>
+<script>
+const PASS_ADMIN = 'oxibot2026';
+function login(){
+  if(document.getElementById('pass').value === PASS_ADMIN){
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('panel').classList.remove('hidden');
+  }else{alert('Contraseña incorrecta');}
+}
+function generarModulo(){
+  const prompt = document.getElementById('promptIA').value;
+  if(!prompt){alert('Describe el módulo');return;}
+  const id = prompt.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,10);
+  const modulo = {
+    id: id,
+    nombre: prompt.substring(0,15).toUpperCase(),
+    icon: "🔧",
+    desc: prompt,
+    precio: 0.50,
+    html: `<div class='bg-slate-800 rounded-3xl p-5 mb-4'><h2 class='font-bold mb-4'>${prompt}</h2><button onclick='alert("Módulo ${id}")' class='w-full bg-blue-600 py-5 rounded-2xl font-bold btn-3d'>EJECUTAR</button></div>`,
+    js: `console.log('Módulo ${id} activo');`
+  };
+  document.getElementById('resultadoIA').innerHTML = `<div class="bg-slate-700 p-4 rounded-xl"><div class="font-bold mb-2">✅ Copia esto en config/modulos.json:</div><pre class="text-xs overflow-x-auto bg-slate-900 p-3 rounded">"${id}": ${JSON.stringify(modulo, null, 2)}</pre></div>`;
+}
+</script>
+</body>
+</html>

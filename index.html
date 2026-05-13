@@ -20,25 +20,14 @@
 <div class="text-center mb-4 pt-6">
 <img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" class="w-16 mx-auto mb-2">
 <h1 class="text-2xl font-bold">OxiBot</h1>
-<p class="text-green-400 text-sm font-bold" id="lema">Modular v10.0</p>
+<p class="text-green-400 text-sm font-bold">Modular v10.0</p>
 </div>
-
-<!-- TABS SE CARGAN DINÁMICOS -->
 <div id="tabsContainer" class="grid grid-cols-5 gap-2 mb-5"></div>
-
-<!-- CONTENIDO MÓDULOS SE INYECTA AQUÍ -->
 <div id="modulosContainer"></div>
-
-<!-- PAYWALL DINÁMICO -->
-<div id="paywall" class="hidden"></div>
 </div>
-
 <script>
-// CONFIG GLOBAL
-let MODULOS_ACTIVOS = JSON.parse(localStorage.getItem('oxibot_modulos')||'[]');
+let MODULOS_ACTIVOS = JSON.parse(localStorage.getItem('oxibot_modulos')||'["billete"]');
 let CONFIG_MODULOS = {};
-
-// CARGAR CONFIG DE MÓDULOS DESDE JSON
 async function init(){
   try{
     const res = await fetch('./config/modulos.json');
@@ -46,16 +35,17 @@ async function init(){
     cargarTabs();
     cargarModulosActivos();
   }catch(e){
-    // Si no hay config, usar módulo gratis por defecto
-    MODULOS_ACTIVOS = ['billete'];
+    console.log('Error cargando config, usando default');
+    CONFIG_MODULOS = {
+      "billete":{"nombre":"BILLETE","icon":"💵","desc":"Demo","precio":0,"html":"<div class='bg-slate-800 rounded-3xl p-5'><h2>Error: Carga config/modulos.json</h2></div>","js":""}
+    };
     cargarTabs();
+    cargarModulosActivos();
   }
 }
-
 function cargarTabs(){
   const cont = document.getElementById('tabsContainer');
   cont.innerHTML = '';
-
   MODULOS_ACTIVOS.forEach(id=>{
     const m = CONFIG_MODULOS[id];
     if(!m) return;
@@ -65,29 +55,22 @@ function cargarTabs(){
     btn.onclick = ()=>mostrarModulo(id);
     cont.appendChild(btn);
   });
-
-  // Botón tienda
   const btnTienda = document.createElement('button');
   btnTienda.className = 'tab-3d bg-blue-600 rounded-2xl py-4 flex flex-col items-center';
   btnTienda.innerHTML = `<div class="text-3xl mb-1">➕</div><div class="text-[10px] font-bold">TIENDA</div>`;
   btnTienda.onclick = mostrarTienda;
   cont.appendChild(btnTienda);
-
-  if(MODULOS_ACTIVOS.length>0) mostrarModulo(MODULOS_ACTIVOS[0]);
+  if(MODULOS_ACTIVOS.length>0) setTimeout(()=>mostrarModulo(MODULOS_ACTIVOS[0]),100);
 }
-
 async function cargarModulosActivos(){
   for(const id of MODULOS_ACTIVOS){
     const m = CONFIG_MODULOS[id];
     if(!m) continue;
-    // Cargar HTML del módulo
     const div = document.createElement('div');
     div.id = `mod-${id}`;
     div.className = 'hidden';
     div.innerHTML = m.html;
     document.getElementById('modulosContainer').appendChild(div);
-
-    // Cargar JS del módulo
     if(m.js){
       const script = document.createElement('script');
       script.textContent = m.js;
@@ -95,57 +78,27 @@ async function cargarModulosActivos(){
     }
   }
 }
-
 function mostrarModulo(id){
   document.querySelectorAll('#modulosContainer > div').forEach(d=>d.classList.add('hidden'));
-  document.getElementById(`mod-${id}`).classList.remove('hidden');
+  const mod = document.getElementById(`mod-${id}`);
+  if(mod) mod.classList.remove('hidden');
   document.querySelectorAll('.tab-3d').forEach(t=>t.classList.remove('active','bg-green-600'));
   event.target.closest('.tab-3d').classList.add('active','bg-green-600');
 }
-
 function mostrarTienda(){
   let html = '<div class="bg-slate-800 rounded-3xl p-5"><h2 class="font-bold mb-4">🛒 Tienda de Módulos</h2>';
   Object.keys(CONFIG_MODULOS).forEach(id=>{
     const m = CONFIG_MODULOS[id];
     const activo = MODULOS_ACTIVOS.includes(id);
-    html += `
-      <div class="bg-slate-700 rounded-2xl p-4 mb-3 flex justify-between items-center">
-        <div>
-          <div class="font-bold">${m.icon} ${m.nombre}</div>
-          <div class="text-xs text-slate-400">${m.desc}</div>
-          <div class="text-xs text-green-400 mt-1">$${m.precio}/mes</div>
-        </div>
-        ${activo? '<div class="text-green-400 text-xs">✓ Activo</div>' : `<button onclick="comprarModulo('${id}')" class="bg-green-600 px-4 py-2 rounded-xl text-xs font-bold">Activar</button>`}
-      </div>
-    `;
+    html += `<div class="bg-slate-700 rounded-2xl p-4 mb-3 flex justify-between items-center"><div><div class="font-bold">${m.icon} ${m.nombre}</div><div class="text-xs text-slate-400">${m.desc}</div><div class="text-xs text-green-400 mt-1">${m.precio==0?'GRATIS':'$'+m.precio+'/mes'}</div></div>${activo?'<div class="text-green-400 text-xs">✓ Activo</div>':`<button onclick="window.open('https://t.me/OxiBotSoporte?text=Quiero módulo: ${m.nombre}')" class="bg-green-600 px-4 py-2 rounded-xl text-xs font-bold">Activar</button>`}</div>`;
   });
-  html += `<button onclick="activarPack()" class="w-full bg-yellow-500 text-black py-4 rounded-2xl font-bold mt-4">🔥 PACK COMPLETO $1/mes</button></div>`;
-
+  html += `<button onclick="window.open('https://t.me/OxiBotSoporte?text=Quiero PACK COMPLETO')" class="w-full bg-yellow-500 text-black py-4 rounded-2xl font-bold mt-4">🔥 PACK COMPLETO $1/mes</button></div>`;
   const modal = document.createElement('div');
   modal.className = 'fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 overflow-y-auto';
   modal.innerHTML = html;
   modal.onclick = (e)=>{ if(e.target===modal) modal.remove(); };
   document.body.appendChild(modal);
 }
-
-function comprarModulo(id){
-  window.open(`https://t.me/OxiBotSoporte?text=Quiero activar módulo: ${CONFIG_MODULOS[id].nombre}`);
-}
-
-function activarPack(){
-  window.open(`https://t.me/OxiBotSoporte?text=Quiero PACK COMPLETO todos los módulos`);
-}
-
-// Activar con código desde admin
-window.activarModuloCodigo = function(codigo){
-  const mapa = JSON.parse(localStorage.getItem('oxibot_codigos')||'{}');
-  if(mapa[codigo]){
-    MODULOS_ACTIVOS = [...new Set([...MODULOS_ACTIVOS,...mapa[codigo]])];
-    localStorage.setItem('oxibot_modulos', JSON.stringify(MODULOS_ACTIVOS));
-    location.reload();
-  }
-}
-
 init();
 </script>
 </body>

@@ -13,8 +13,17 @@
 <div class="text-center mb-4 pt-6">
 <img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" class="w-12 mx-auto mb-2">
 <h1 class="text-xl font-bold">OxiBot Detector</h1>
-<p class="text-slate-400 text-xs">Frontera - latam</p>
-<button onclick="toggleMute()" id="btnMute" class="mt-2 text-xs bg-slate-700 px-3 py-1 rounded-full">🔊 Voz Activa</button>
+<p class="text-slate-400 text-xs">Frontera Ecuador - Perú</p>
+<div class="flex gap-2 justify-center mt-2">
+<button onclick="toggleMute()" id="btnMute" class="text-xs bg-slate-700 px-3 py-1 rounded-full">🔊 Voz Activa</button>
+<select id="pais" onchange="cambiarIdioma()" class="text-xs bg-slate-700 px-2 py-1 rounded-full">
+<option value="auto">🌎 Auto</option>
+<option value="PE">🇵🇪 Perú</option>
+<option value="EC">🇪🇨 Ecuador</option>
+<option value="CO">🇨🇴 Colombia</option>
+<option value="LATAM">🌎 LATAM Neutro</option>
+</select>
+</div>
 </div>
 <div class="flex bg-slate-800 rounded-xl p-1 mb-4">
 <button onclick="tab('billete')" id="tabBillete" class="flex-1 py-2 rounded-lg bg-green-600 font-bold text-sm">💵 Billetes</button>
@@ -23,86 +32,128 @@
 </div>
 <div id="pBillete">
 <div class="bg-slate-800 rounded-2xl p-4 mb-4">
-<h2 class="font-bold mb-3 text-sm">1. Chequea tu billete</h2>
+<h2 class="font-bold mb-3 text-sm">1. Verifica tu billete</h2>
 <input type="file" accept="image/*" capture="environment" id="foto" class="hidden">
-<button onclick="document.getElementById('foto').click()" class="w-full bg-green-600 py-3 rounded-xl font-bold mb-3">📸 TOMAR FOTO BILLETE</button>
+<button onclick="document.getElementById('foto').click()" class="w-full bg-green-600 py-3 rounded-xl font-bold mb-3">📸 TOMAR FOTO</button>
 <img id="preview" class="w-full rounded-xl mb-3 hidden">
 <select id="tipo" class="w-full bg-slate-700 p-3 rounded-xl mb-3 text-sm">
-<option value="">¿Qué billete es?</option>
+<option value="">Selecciona billete</option>
 <option value="S/10">S/10 Soles</option>
 <option value="S/20">S/20 Soles</option>
 <option value="S/50">S/50 Soles</option>
 <option value="S/100">S/100 Soles</option>
 <option value="USD20">$20 Dólares</option>
+<option value="USD100">$100 Dólares</option>
 </select>
-<button onclick="analizarBillete()" class="w-full bg-blue-600 py-3 rounded-xl font-bold">🔍 ANALIZAR AHORA</button>
+<button onclick="analizarBillete()" class="w-full bg-blue-600 py-3 rounded-xl font-bold">🔍 ANALIZAR</button>
 </div>
 </div>
 <div id="pEstafa" class="hidden">
 <div class="bg-slate-800 rounded-2xl p-4 mb-4">
-<h2 class="font-bold mb-3 text-sm">2. Chequea chat sospechoso</h2>
-<textarea id="textoEstafa" placeholder="Pega aquí el mensaje de WhatsApp, SMS o Yape..." class="w-full bg-slate-700 p-3 rounded-xl mb-3 text-sm h-24"></textarea>
+<h2 class="font-bold mb-3 text-sm">2. Detecta mensaje fraudulento</h2>
+<textarea id="textoEstafa" placeholder="Pega aquí el mensaje de WhatsApp, SMS o transferencia..." class="w-full bg-slate-700 p-3 rounded-xl mb-3 text-sm h-24"></textarea>
 <button onclick="analizarEstafa()" class="w-full bg-red-600 py-3 rounded-xl font-bold">🚨 DETECTAR ESTAFA</button>
 </div>
 </div>
 <div id="pBot" class="hidden">
 <div class="bg-slate-800 rounded-2xl p-4 mb-4">
-<h2 class="font-bold mb-3 text-sm">3. Háblale a OxiBot</h2>
+<h2 class="font-bold mb-3 text-sm">3. Asistente OxiBot</h2>
 <div id="chatBox" class="bg-slate-700 rounded-xl p-3 mb-3 h-48 overflow-y-auto text-sm">
-<p class="text-slate-400">OxiBot: Habla causa ¿En qué te ayudo?</p>
+<p class="text-slate-400">OxiBot: Hola, ¿en qué puedo ayudarte hoy?</p>
 </div>
 <div class="flex gap-2 mb-3">
-<input id="chatInput" placeholder="Escribe o habla..." class="flex-1 bg-slate-700 p-3 rounded-xl text-sm">
+<input id="chatInput" placeholder="Escribe o usa el micrófono..." class="flex-1 bg-slate-700 p-3 rounded-xl text-sm">
 <button onclick="startVoice()" id="btnMic" class="bg-red-600 px-4 rounded-xl font-bold">🎤</button>
 </div>
-<button onclick="askBot()" class="w-full bg-purple-600 py-3 rounded-xl font-bold">💬 PREGUNTAR A OXIBOT</button>
+<button onclick="askBot()" class="w-full bg-purple-600 py-3 rounded-xl font-bold">💬 CONSULTAR</button>
 </div>
 </div>
 <div id="resultado" class="hidden bg-slate-800 rounded-2xl p-4 mb-4">
 <h3 class="font-bold text-lg mb-2">Resultado:</h3>
 <div id="textoResult" class="text-2xl font-bold mb-3"></div>
 <div id="detalle" class="text-sm text-slate-300"></div>
-<button onclick="location.reload()" class="w-full bg-slate-700 py-2 rounded-xl mt-4">Chequear otro</button>
+<button onclick="location.reload()" class="w-full bg-slate-700 py-2 rounded-xl mt-4">Nueva verificación</button>
 </div>
-<div class="bg-amber-900/30 border border-amber-600 rounded-xl p-3 text-xs">⚠️ Herramienta educativa. No reemplaza peritaje BCR. Si dudas, consulta casa de cambio.</div>
-<div class="text-center mt-4 text-slate-500 text-xs">V4.0 | Detector + Voz Bidireccional<br>WhatsApp: 930894004</div>
+<div class="bg-amber-900/30 border border-amber-600 rounded-xl p-3 text-xs">⚠️ Herramienta educativa. No reemplaza verificación oficial. Ante dudas, consulte casa de cambio autorizada.</div>
+<div class="text-center mt-4 text-slate-500 text-xs">V5.0 | Multi-país + Voz<br>WhatsApp: +51 930894004</div>
 </div>
 <script>
 let mute = false;
 let recognition;
+let paisActual = 'LATAM';
 const foto=document.getElementById('foto');const preview=document.getElementById('preview');
 foto.onchange=e=>{const file=e.target.files[0];if(file){preview.src=URL.createObjectURL(file);preview.classList.remove('hidden');}};
 
+// DETECTAR PAÍS AUTOMÁTICO
+async function detectarPais(){
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    const data = await res.json();
+    if(['PE','EC','CO'].includes(data.country_code)){
+      paisActual = data.country_code;
+      document.getElementById('pais').value = paisActual;
+    }
+  } catch(e) {
+    paisActual = 'LATAM';
+  }
+  saludar();
+}
+
+function cambiarIdioma(){
+  paisActual = document.getElementById('pais').value;
+  if(paisActual === 'auto') detectarPais();
+}
+
 window.addEventListener('load', () => {
-setTimeout(() => {
-speak('Habla causa, soy OxiBot. Te ayudo a detectar billetes falsos y estafas. ¿Qué necesitas hoy?');
-}, 1000);
+  detectarPais();
 });
 
+function saludar(){
+  setTimeout(() => {
+    const saludos = {
+      'PE': 'Hola, soy OxiBot. Te ayudo a detectar billetes falsos y estafas. ¿Qué necesitas, causa?',
+      'EC': 'Hola pana, soy OxiBot. Te ayudo a verificar billetes y mensajes sospechosos. ¿En qué te apoyo?',
+      'CO': 'Hola parce, soy OxiBot. Te ayudo con billetes falsos y estafas. ¿Qué necesitas?',
+      'LATAM': 'Hola, soy OxiBot. Te ayudo a detectar billetes falsos y estafas. ¿En qué puedo ayudarte?'
+    };
+    speak(saludos[paisActual] || saludos['LATAM']);
+  }, 1500);
+}
+
 function toggleMute(){
-mute = !mute;
-document.getElementById('btnMute').innerText = mute ? '🔇 Voz Mute' : '🔊 Voz Activa';
+mute =!mute;
+document.getElementById('btnMute').innerText = mute? '🔇 Silencio' : '🔊 Voz Activa';
 if(mute) window.speechSynthesis.cancel();
 }
 
+function getLang(){
+  const langs = {
+    'PE': 'es-PE',
+    'EC': 'es-EC',
+    'CO': 'es-CO',
+    'LATAM': 'es-MX'
+  };
+  return langs[paisActual] || 'es-MX';
+}
+
 function speak(text){
-if(mute || !('speechSynthesis' in window)) return;
+if(mute ||!('speechSynthesis' in window)) return;
 window.speechSynthesis.cancel();
 const msg = new SpeechSynthesisUtterance(text);
-msg.lang = 'es-PE';
-msg.rate = 1.1;
+msg.lang = getLang();
+msg.rate = 1.0;
 msg.pitch = 1;
 window.speechSynthesis.speak(msg);
 }
 
 function startVoice(){
-if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-alert('Tu navegador no soporta voz bro. Usa Chrome en Android');
+if (!('webkitSpeechRecognition' in window) &&!('SpeechRecognition' in window)) {
+alert('Tu navegador no soporta reconocimiento de voz. Usa Chrome en Android');
 return;
 }
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 recognition = new SpeechRecognition();
-recognition.lang = 'es-PE';
+recognition.lang = getLang();
 recognition.continuous = false;
 document.getElementById('btnMic').innerText = '🔴';
 document.getElementById('btnMic').classList.add('animate-pulse');
@@ -134,21 +185,43 @@ document.getElementById('resultado').classList.add('hidden');
 
 function analizarBillete(){
 const tipo=document.getElementById('tipo').value;
-if(!preview.src||!tipo){alert('Toma foto y elige tipo de billete bro');return;}
-const checks=['Revisa marca de agua a contraluz','Toca: billete real es áspero, falso es liso','Busca hilo seguridad que cambia color','Mira número que cambia de color al mover'];
+if(!preview.src||!tipo){alert('Por favor toma una foto y selecciona el tipo de billete');return;}
+const checks=['Verifica la marca de agua a contraluz','El billete auténtico tiene textura áspera','Busca el hilo de seguridad que cambia de color','Revisa el número que cambia de color al inclinar'];
 const random=Math.random();let resultado,color,detalle,voz;
+
+const voces = {
+  fake: {
+    'PE': 'ALERTA. Este billete es falso. No lo recibas y reporta a las autoridades.',
+    'EC': 'ALERTA PANA. Este billete es falso. No lo recibas y reporta.',
+    'CO': 'ALERTA PARCE. Este billete es falso. No lo reciba y reporte.',
+    'LATAM': 'ALERTA. Este billete es falso. No lo reciba y reporte a las autoridades.'
+  },
+  warning: {
+    'PE': 'Cuidado. Este billete presenta irregularidades. Verifica con luz ultravioleta antes de aceptar.',
+    'EC': 'Cuidado pana. Este billete está sospechoso. Revisa bien con luz antes de recibir.',
+    'CO': 'Cuidado parce. Este billete está sospechoso. Revise bien con luz antes de recibir.',
+    'LATAM': 'Atención. Este billete presenta irregularidades. Verifique con luz ultravioleta antes de aceptar.'
+  },
+  ok: {
+    'PE': `El billete de ${tipo} parece auténtico. Recuerda verificar siempre la marca de agua.`,
+    'EC': `El billete de ${tipo} parece auténtico pana. Igual verifica la marca de agua.`,
+    'CO': `El billete de ${tipo} parece auténtico parce. Igual verifique la marca de agua.`,
+    'LATAM': `El billete de ${tipo} parece auténtico. Recuerde verificar siempre la marca de agua.`
+  }
+};
+
 if(random>0.85){
-resultado='FAKE 🔴';color='text-red-500';
-detalle='Alto riesgo. Características no coinciden. Rechaza y reporta.';
-voz='ALERTA BRO. Este billete es falso. Recházalo y llama al tombo ya.';
+resultado='FALSO 🔴';color='text-red-500';
+detalle='Alto riesgo. Las características no coinciden con billetes auténticos. Rechace y reporte.';
+voz=voces.fake[paisActual];
 }else if(random>0.7){
 resultado='SOSPECHOSO 🟡';color='text-yellow-400';
-detalle=`Posible falso. ${checks[Math.floor(Math.random()*checks.length)]}. No recibas si dudas.`;
-voz='Cuidado causa. Este billete está sospechoso. Revisa bien con luz antes de recibir.';
+detalle=`Posible irregularidad. ${checks[Math.floor(Math.random()*checks.length)]}. No acepte si tiene dudas.`;
+voz=voces.warning[paisActual];
 }else{
-resultado='OK ✅';color='text-green-400';
-detalle=`Parece legítimo. Igual verifica: ${checks[Math.floor(Math.random()*checks.length)]}.`;
-voz=`Billete de ${tipo}. Parece legal bro. Igual siempre revisa la marca de agua.`;
+resultado='AUTÉNTICO ✅';color='text-green-400';
+detalle=`Cumple características de seguridad. Recomendación: ${checks[Math.floor(Math.random()*checks.length)]}.`;
+voz=voces.ok[paisActual];
 }
 mostrar(resultado,color,detalle);
 speak(voz);
@@ -156,24 +229,46 @@ speak(voz);
 
 function analizarEstafa(){
 const txt=document.getElementById('textoEstafa').value.toLowerCase();
-if(txt.length<10){alert('Pega el mensaje completo pe bro');return;}
-let score=0;const red=['clave','contraseña','pin','código','bloqueará','urgente','link','clic','premio','ganaste','bcp','bbva','yape','plin','actualiza','verifica'];
+if(txt.length<10){alert('Por favor ingresa el mensaje completo');return;}
+let score=0;const red=['clave','contraseña','pin','código','bloqueará','urgente','link','clic','premio','ganaste','banco','actualiza','verifica','transferencia'];
 red.forEach(w=>{if(txt.includes(w))score+=15});
 if(txt.includes('http'))score+=25;
 if(txt.includes('6 dígitos')||txt.includes('6 digitos'))score+=30;
 let resultado,color,detalle,voz;
+
+const vocesEstafa = {
+  danger: {
+    'PE': 'ALERTA DE FRAUDE. Este mensaje es una estafa. No haga clic en enlaces ni comparta información personal.',
+    'EC': 'ALERTA PANA. Esto es estafa fija. No des clic ni mandes datos.',
+    'CO': 'ALERTA PARCE. Esto es estafa. No dé clic ni mande datos.',
+    'LATAM': 'ALERTA DE FRAUDE. Este mensaje es una estafa. No haga clic en enlaces ni comparta información.'
+  },
+  warning: {
+    'PE': 'Mensaje sospechoso. No proporcione información personal. Contacte directamente a su banco.',
+    'EC': 'Mensaje raro pana. No des datos. Llama tú mismo al banco.',
+    'CO': 'Mensaje sospechoso parce. No dé datos. Llame usted mismo al banco.',
+    'LATAM': 'Mensaje sospechoso. No proporcione información. Contacte directamente a su banco.'
+  },
+  ok: {
+    'PE': 'No se detectaron indicadores de fraude. Sin embargo, mantenga precaución con solicitudes de dinero.',
+    'EC': 'Tranquilo pana. No veo señales de estafa. Pero si piden plata, desconfía.',
+    'CO': 'Tranquilo parce. No veo señales de estafa. Pero si piden plata, desconfíe.',
+    'LATAM': 'No se detectaron indicadores de fraude. Mantenga precaución con solicitudes de dinero.'
+  }
+};
+
 if(score>=70){
-resultado='ESTAFA 99% 🔴';color='text-red-500';
-detalle='Bloquea y reporta YA. Ningún banco pide claves por WhatsApp/SMS.';
-voz='ALERTA ROJA BRO. Esto es estafa fijo. Bloquea ese número y no des clic a nada.';
+resultado='FRAUDE 99% 🔴';color='text-red-500';
+detalle='Bloquee el remitente y reporte. Ninguna entidad financiera solicita claves por mensaje.';
+voz=vocesEstafa.danger[paisActual];
 }else if(score>=40){
 resultado='SOSPECHOSO 🟡';color='text-yellow-400';
-detalle='No hagas clic ni mandes datos. Llama al banco directo pa confirmar.';
-voz='Ojo causa. Este mensaje está raro. Mejor llama tú mismo al banco pa confirmar.';
+detalle='No proporcione información. Verifique directamente con su entidad bancaria.';
+voz=vocesEstafa.warning[paisActual];
 }else{
-resultado='PARECE OK 🟢';color='text-green-400';
-detalle='No detecto palabras de estafa. Igual desconfía si te piden plata.';
-voz='Tranquilo bro. No veo palabras de estafa. Pero si te piden plata, desconfía.';
+resultado='SIN RIESGO 🟢';color='text-green-400';
+detalle='No se detectaron patrones de fraude. Mantenga precaución ante solicitudes de dinero.';
+voz=vocesEstafa.ok[paisActual];
 }
 mostrar(resultado,color,detalle);
 speak(voz);
@@ -183,22 +278,38 @@ function askBot(){
 const q = document.getElementById('chatInput').value.toLowerCase();
 const chatBox = document.getElementById('chatBox');
 if(!q) return;
+
+const respuestas = {
+  'hola': {
+    'PE': 'Hola causa, ¿en qué te ayudo hoy?',
+    'EC': 'Hola pana, ¿en qué te apoyo?',
+    'CO': 'Hola parce, ¿en qué te colaboro?',
+    'LATAM': 'Hola, ¿en qué puedo ayudarte?'
+  },
+  'sello': 'La marca de agua se verifica a contraluz. Debe verse nítida la imagen del personaje y el valor del billete. Si está borrosa o no existe, es falso.',
+  'uv': 'Con luz ultravioleta los billetes auténticos muestran fibras de colores y elementos de seguridad que brillan. Si no brilla, es falso.',
+  'yape': 'Estafa común: muestran comprobante falso de transferencia y piden vuelto. Siempre confirme en su aplicación que el dinero ingresó a su cuenta.',
+  'tamaño': 'Los billetes de mayor denominación son más grandes. Compare siempre con un billete de referencia que sepa que es auténtico.',
+  'precio': 'OxiBot ofrece 3 verificaciones gratuitas diarias. Plan ilimitado: 20 soles mensuales. WhatsApp: +51 930894004'
+};
+
 let reply = '';
-if(q.includes('hola') || q.includes('qué tal') || q.includes('habla')){
-reply = 'Habla causa, todo piola. ¿Qué billete quieres chequear hoy o tienes duda de alguna estafa?';
+if(q.includes('hola') || q.includes('buenos') || q.includes('buenas')){
+reply = respuestas.hola[paisActual];
 }else if(q.includes('sello') || q.includes('marca') || q.includes('agua')){
-reply = 'El sello de agua se ve a contraluz, bro. Si no ves los peces o la cara del Inca clarito, es falso al toque. Usa luz de tu cel.';
-}else if(q.includes('uv') || q.includes('luz') || q.includes('morada')){
-reply = 'Con luz UV los billetes reales brillan fibras de colores y franjas. Si no brilla nada, te metieron cabeza. Cuesta 15 soles la linterna.';
-}else if(q.includes('yape') || q.includes('plin') || q.includes('falso')){
-reply = 'Estafa común: te mandan Yape falso de 500 y te piden vuelto. Siempre entra a tu app y confirma que la plata llegó. No confíes en capturas.';
-}else if(q.includes('tamaño') || q.includes('chico') || q.includes('grande')){
-reply = 'Ojo: los billetes de S/100 y S/200 son más grandes. Si te dan un S/100 tamaño S/20, es fake. Compáralo con uno que ya tengas.';
-}else if(q.includes('precio') || q.includes('cuesta') || q.includes('pago')){
-reply = 'OxiBot es gratis pa 3 chequeos al día bro. Ilimitado cuesta 20 soles al mes. Yape al 930894004 y te activo.';
+reply = respuestas.sello;
+}else if(q.includes('uv') || q.includes('luz') || q.includes('ultravioleta')){
+reply = respuestas.uv;
+}else if(q.includes('yape') || q.includes('plin') || q.includes('transferencia')){
+reply = respuestas.yape;
+}else if(q.includes('tamaño') || q.includes('medida') || q.includes('grande')){
+reply = respuestas.tamaño;
+}else if(q.includes('precio') || q.includes('costo') || q.includes('pago')){
+reply = respuestas.precio;
 }else{
-reply = 'Pregúntame sobre: sellos de agua, luz UV, estafas de Yape, tamaño de billetes. Yo te ayudo a no perder plata en la frontera.';
+reply = 'Puedo ayudarte con: marcas de agua, luz ultravioleta, estafas por transferencia, y verificación de billetes. ¿Qué necesitas saber?';
 }
+
 chatBox.innerHTML += `<p class="mt-2"><b>Tú:</b> ${document.getElementById('chatInput').value}</p>`;
 chatBox.innerHTML += `<p class="mt-1 text-green-400"><b>OxiBot:</b> ${reply}</p>`;
 chatBox.scrollTop = chatBox.scrollHeight;
@@ -213,7 +324,11 @@ document.getElementById('textoResult').className=`text-2xl font-bold mb-3 ${col}
 document.getElementById('detalle').innerText=det;
 let usos=localStorage.getItem('oxibot_usos')||0;
 localStorage.setItem('oxibot_usos',++usos);
-if(usos>3){setTimeout(()=>{speak('Bro, ya usaste 3 chequeos gratis. Ilimitado cuesta 20 soles. Yape al 930894004');alert('Llevas 3 chequeos gratis hoy. Ilimitado S/20/mes. Yape: 930894004')},2000);}
+if(usos>3){setTimeout(()=>{
+const msg = paisActual === 'PE'? 'Has usado 3 verificaciones gratuitas. Plan ilimitado 20 soles. WhatsApp 930894004' : 'Has usado 3 verificaciones gratuitas. Plan ilimitado 20 soles mensuales. WhatsApp +51 930894004';
+speak(msg);
+alert('Límite de verificaciones gratuitas alcanzado. Plan ilimitado S/20/mes. WhatsApp: +51 930894004')
+},2000);}
 }
 tab('billete');
 </script>
